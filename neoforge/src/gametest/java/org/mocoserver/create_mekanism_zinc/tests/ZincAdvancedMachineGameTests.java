@@ -143,13 +143,24 @@ public final class ZincAdvancedMachineGameTests {
         Item ingot = item("create:zinc_ingot");
         ChemicalStack oxygen = chemical("mekanism:oxygen", 100);
         ChemicalStack acid = chemical("mekanism:sulfuric_acid", 100);
+        ItemStack crushedBatch = new ItemStack(crushed, 64);
+        ItemStack ingotBatch = new ItemStack(ingot, 64);
+        int enriching = 0;
+        for (var holder : helper.getLevel().getRecipeManager().getAllRecipesFor(MekanismRecipeType.ENRICHING.get())) {
+            if (holder.id().getNamespace().equals(ZincContent.MOD_ID)) {
+                enriching++;
+                var recipe = holder.value();
+                helper.assertTrue(!recipe.test(crushedBatch), holder.id() + " accepts a 64-stack of crushed raw zinc");
+                helper.assertTrue(!recipe.test(ingotBatch), holder.id() + " accepts a 64-stack of zinc ingots");
+            }
+        }
         int purifying = 0;
         for (var holder : helper.getLevel().getRecipeManager().getAllRecipesFor(MekanismRecipeType.PURIFYING.get())) {
             if (holder.id().getNamespace().equals(ZincContent.MOD_ID)) {
                 purifying++;
                 var recipe = holder.value();
-                helper.assertTrue(!recipe.test(new ItemStack(crushed), oxygen), holder.id() + " accepts crushed raw zinc");
-                helper.assertTrue(!recipe.test(new ItemStack(ingot), oxygen), holder.id() + " accepts a zinc ingot");
+                helper.assertTrue(!recipe.test(crushedBatch, oxygen), holder.id() + " accepts a 64-stack of crushed raw zinc");
+                helper.assertTrue(!recipe.test(ingotBatch, oxygen), holder.id() + " accepts a 64-stack of zinc ingots");
             }
         }
         int injecting = 0;
@@ -157,8 +168,8 @@ public final class ZincAdvancedMachineGameTests {
             if (holder.id().getNamespace().equals(ZincContent.MOD_ID)) {
                 injecting++;
                 var recipe = holder.value();
-                helper.assertTrue(!recipe.test(new ItemStack(crushed), chemical("mekanism:hydrogen_chloride", 100)), holder.id() + " accepts crushed raw zinc");
-                helper.assertTrue(!recipe.test(new ItemStack(ingot), chemical("mekanism:hydrogen_chloride", 100)), holder.id() + " accepts a zinc ingot");
+                helper.assertTrue(!recipe.test(crushedBatch, chemical("mekanism:hydrogen_chloride", 100)), holder.id() + " accepts a 64-stack of crushed raw zinc");
+                helper.assertTrue(!recipe.test(ingotBatch, chemical("mekanism:hydrogen_chloride", 100)), holder.id() + " accepts a 64-stack of zinc ingots");
             }
         }
         int dissolution = 0;
@@ -166,12 +177,12 @@ public final class ZincAdvancedMachineGameTests {
             if (holder.id().getNamespace().equals(ZincContent.MOD_ID)) {
                 dissolution++;
                 var recipe = holder.value();
-                helper.assertTrue(!recipe.test(new ItemStack(crushed), acid), holder.id() + " accepts crushed raw zinc");
-                helper.assertTrue(!recipe.test(new ItemStack(ingot), acid), holder.id() + " accepts a zinc ingot");
+                helper.assertTrue(!recipe.test(crushedBatch, acid), holder.id() + " accepts a 64-stack of crushed raw zinc");
+                helper.assertTrue(!recipe.test(ingotBatch, acid), holder.id() + " accepts a 64-stack of zinc ingots");
             }
         }
-        helper.assertTrue(purifying > 0 && injecting > 0 && dissolution > 0,
-                "expected addon purifying/injecting/dissolution recipe families, got " + purifying + "/" + injecting + "/" + dissolution);
+        helper.assertTrue(enriching > 0 && purifying > 0 && injecting > 0 && dissolution > 0,
+                "expected addon enriching/purifying/injecting/dissolution recipe families, got " + enriching + "/" + purifying + "/" + injecting + "/" + dissolution);
         helper.succeed();
     }
 

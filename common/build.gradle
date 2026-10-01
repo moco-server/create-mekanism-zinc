@@ -1,0 +1,78 @@
+plugins {
+    id 'java-library'
+}
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(21)
+    withSourcesJar()
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.11.4')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 21
+}
+
+test {
+    useJUnitPlatform()
+}
+
+abstract class CheckCommonBoundary extends DefaultTask {
+    @InputFiles
+    @PathSensitive(PathSensitivity.NONE)
+    abstract ConfigurableFileCollection getProductionClasspath()
+
+    @Internal
+    abstract ListProperty<String> getResolvedCoordinates()
+
+    @TaskAction
+    void checkBoundary() {
+        def forbiddenCoordinates = resolvedCoordinates.get().findAll { coordinate ->
+            def parts = coordinate.toLowerCase(Locale.ROOT).split(':')
+            def group = parts[0]
+            def module = parts[1]
+            group == 'net.minecraft' || group.startsWith('net.minecraft.') ||
+                    group == 'net.neoforged' || group.startsWith('net.neoforged.') ||
+                    group == 'net.minecraftforge' || group.startsWith('net.minecraftforge.') ||
+                    (group == 'maven.modrinth' && (module == 'create' || module == 'mekanism')) ||
+                    group == 'com.simibubi.create' || module == 'mekanism' ||
+                    ['create', 'create-1.21.1', 'registrate', 'ponder', 'flywheel'].contains(module)
+        }
+
+        def forbiddenPackages = ['net/minecraft/', 'net/neoforged/', 'net/minecraftforge/',
+                                 'com/simibubi/create/', 'mekanism/']
+        def forbiddenFiles = productionClasspath.files.findAll { file ->
+            if (!file.isFile() || !file.name.endsWith('.jar')) return false
+            new java.util.jar.JarFile(file).withCloseable { jar ->
+                jar.entries().any { entry -> forbiddenPackages.any { root -> entry.name.startsWith(root) } }
+            }
+        }
+        if (!forbiddenCoordinates.empty || !forbiddenFiles.empty) {
+            def details = (forbiddenCoordinates.unique().sort() + forbiddenFiles.collect { it.name }.sort()).join(', ')
+            throw new GradleException("common production classpath contains forbidden game/mod dependencies: ${details}")
+        }
+        logger.lifecycle("common production classpath boundary passed (${productionClasspath.files.size()} artifacts)")
+    }
+}
+
+tasks.register('checkCommonBoundary', CheckCommonBoundary) {
+    group = 'verification'
+    description = 'Rejects Minecraft, NeoForge, Create, and Mekanism dependencies from common production classpaths.'
+    productionClasspath.from(configurations.compileClasspath, configurations.runtimeClasspath)
+    resolvedCoordinates.set(['compileClasspath', 'runtimeClasspath'].collectMany { name ->
+        configurations.getByName(name).incoming.resolutionResult.allComponents.collect { component ->
+            component.id instanceof ModuleComponentIdentifier ?
+                    "${component.id.group}:${component.id.module}:${component.id.version}" : null
+        }.findAll { it != null }
+    })
+}
+check.dependsOn tasks.named('checkCommonBoundary')

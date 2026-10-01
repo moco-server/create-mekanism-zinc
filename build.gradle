@@ -1,0 +1,14 @@
+plugins {
+    id 'net.neoforged.moddev' version '2.0.148' apply false
+}
+
+allprojects {
+    group = 'org.mocoserver.create_mekanism_zinc'
+    version = '0.1.0-dev'
+}
+
+subprojects {
+    repositories {
+        mavenCentral()
+    }
+}

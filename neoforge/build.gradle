@@ -111,11 +111,9 @@ tasks.withType(JavaCompile).configureEach {
 
 test {
     useJUnitPlatform()
-    dependsOn tasks.named('runData')
 }
 
 tasks.named('jar', Jar).configure {
-    dependsOn tasks.named('runData')
     from project(':common').sourceSets.main.output
     from(rootProject.file('LICENSE')) {
         into 'META-INF'

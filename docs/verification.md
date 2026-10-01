@@ -80,6 +80,16 @@ The user requested a singleplayer icon check and explicitly did not need a dedic
 
 Windows Prism launched that profile without a server argument. At 07:20 JST the native client log confirmed addon `0.2.1-dev`, JEI 19.51.0.418, Microsoft Java21, NVIDIA rendering and JEI GUI atlas creation, with no ERROR line in the inspected startup log. No dedicated-server startup command was issued. This confirms native startup; in-game item appearance still awaits the user's singleplayer check. The original processing acceptance remains the `0.2.0-dev` record.
 
+## Reference-style artwork and Japanese labels (`0.2.2-dev`, 2026-10-02)
+
+The user found two Japanese names inconsistent with comparable items and reported that zinc-v1 stood out when viewed beside other materials. They supplied five screenshots in dust/dirty dust/clump/shard/crystal order and requested similarity in visual characteristics, explicitly without processing the existing images. The controller generated a new style-study board with built-in image_gen, labeled the screenshots only as style/category references, then separately authored zinc-v2 native pixel grids. The five textures have subtler contours/highlights, broad granular dust mounds, a solid elongated clump, a short jagged shard and one oblique crystal. The enlarged/16px native preview was reviewed by the controller; user in-game acceptance remains pending.
+
+Luna first changed only the two requested Japanese keys, which the controller reviewed, then generated the five approved pixel grids, changed the generator default input and set `mod_version=0.2.2-dev`. The exact labels are `汚れた亜鉛の粉` and `亜鉛の凝塊`; the other five translations, including both slurry names, remain unchanged.
+
+Both Luna's and the controller's `:common:test :neoforge:test :neoforge:build` completed successfully. The controller repeat had 13 up-to-date tasks; common dependency boundary executed with 0 artifacts. Existing unchanged-code JUnit reports show common6/NeoForge2, zero failures/errors. Independent PNG regeneration produced byte difference0. Controller JAR inspection confirmed all five new 16×16 RGBA textures match source, both exact labels, all production classes and all data JSON byte-identical to0.2.1-dev, 21 recipes, metadata0.2.2-dev, no fixture/test classes or nestedJARs. GameTests/persistence were not repeated for this display-only revision.
+
+The ordinary JAR is49,610bytes, SHA-512 `f4950702e971728bba8bf1e5538e4cce59b7e854465830746ac99df7b761884f776c925ede42ea67e4d023c6d08e0460d6092a58c613013de0fd6c2c31d205d5`; a byte-identical copy is at parent `dist/cmz-trial/create-mekanism-zinc-0.2.2-dev.jar`. Existing Windows client, live server and saved worlds were not updated in this revision. No public release or parent-pack installation occurred.
+
 ## Historical observations — addon 0.1.0-dev at commit `f5f3024`
 
 The following is a historical snapshot of the earlier six-recipe implementation, recorded 2026-10-01 at commit `f5f3024c1ee0f0a3430b8ee9c9f9b863d4f46b8a`. Its runtime directory, server port, JAR names, and GameTest count differ from the current `0.2.0-dev` procedure above. These results are retained for history and do not describe the current runtime.

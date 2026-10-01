@@ -1,10 +1,10 @@
 # Zinc item artwork
 
-## Current artwork: zinc-v1
+## Current artwork: zinc-v2
 
-The five production icons are original 16×16 RGBA PNGs for dust, dirty dust, clump, shard and crystal. Clean zinc uses a silver/sage palette; dirt uses charcoal/brown grains. Each processing stage has a different silhouette. The artwork replaces the original playtesting placeholders in `0.2.1-dev`. User visual acceptance of this revision is pending.
+The five production icons are original 16×16 RGBA PNGs for dust, dirty dust, clump, shard and crystal. In `0.2.2-dev`, zinc-v2 replaces zinc-v1 after the user found the first artwork set visually inconsistent beside other processing materials. It uses muted gray-green shading, a broad granular dust mound, a single solid elongated clump, a short broken shard and one oblique crystal. Dirty dust adds restrained darker grains. User in-game visual acceptance of this revision is pending.
 
-The controller used built-in `image_gen` to create five independent concept images with no third-party image inputs. The complete prompts and original concept outputs are under [`artwork/concepts/zinc-v1`](../artwork/concepts/zinc-v1); exact prompts are in [`prompts.json`](../artwork/concepts/zinc-v1/prompts.json). The production pixel positions were then authored separately in [`artwork/zinc-v1.json`](../artwork/zinc-v1.json). The generated concept PNGs are not resized, sampled or included in the runtime JAR. `tools/generate_icons.py` renders only the editable native grid definitions using the Python standard library. These project artwork sources and production PNGs are distributed under the project MIT license; see [`LICENSE`](../LICENSE).
+The user supplied five small screenshots as references for shape, shading and grain, in dust/dirty dust/clump/shard/crystal order, and explicitly requested newly drawn artwork rather than modification of the existing images. The controller used built-in `image_gen` to create one original style-study board with those screenshots labeled as style/category references, not edit targets. The study and complete prompt are under [`artwork/concepts/zinc-v2`](../artwork/concepts/zinc-v2). The controller separately authored the production pixel positions in [`artwork/zinc-v2.json`](../artwork/zinc-v2.json). No screenshot or generated board is read, sampled, cropped, resized or recolored by the PNG generator; it renders only the editable native grids. The reference screenshots are not included in the repository or runtime JAR. These project artwork sources and production PNGs are distributed under the project MIT license; see [`LICENSE`](../LICENSE).
 
 Regenerate deterministically from the repository root:
 
@@ -12,7 +12,7 @@ Regenerate deterministically from the repository root:
 python3 tools/generate_icons.py
 ```
 
-A non-destructive candidate output is supported with `--output .local/artwork/zinc-v1/native-candidates`. The generator checks the entire palette and all five grids before writing. The preview [`artwork/previews/zinc-v1.png`](../artwork/previews/zinc-v1.png) renders those same native definitions directly, with an enlarged row and a 16px row. Left to right: dust, dirty dust, clump, shard, crystal. Concept images, prompts, pixel sources and previews stay outside the runtime resource tree.
+A non-destructive candidate output is supported with `--output .local/artwork/zinc-v1/native-candidates`. The generator checks the entire palette and all five grids before writing. The preview [`artwork/previews/zinc-v2.png`](../artwork/previews/zinc-v2.png) renders those same native definitions directly, with an enlarged row and a 16px row. Left to right: dust, dirty dust, clump, shard, crystal. Concept images, prompts, pixel sources and previews stay outside the runtime resource tree.
 
 ## Third-party image license review (2026-10-01)
 
@@ -26,3 +26,7 @@ Slurry visuals continue to refer to Mekanism's existing chemical textures, suppl
 ## Historical placeholders
 
 The original `0.1.0-dev` and accepted `0.2.0-dev` icons were hand-authored temporary shapes produced by the earlier `tools/generate_icons.py`, including the scattered yellow-tan dust criticized during playtesting. Their source and artifacts remain in Git history and the prior trial JAR. The artwork revision does not change registered IDs, recipes or processing rates.
+
+## Historical zinc-v1 artwork
+
+The `0.2.1-dev` version used five independently generated concepts without image inputs, then separately authored native pixel grids. That set had dark contours, three-lobed clumps and multi-pronged crystal clusters. The user found that these features stood out beside the other ore-processing items; zinc-v2 reduces contour/highlight contrast and changes those silhouettes. The v1 concepts, prompts, native grids and preview remain under `artwork/` for history. They are no longer the generator's default input.

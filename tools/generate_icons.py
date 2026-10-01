@@ -16,7 +16,7 @@ ICON_IDS = (
     "shard_zinc",
     "crystal_zinc",
 )
-DEFAULT_SOURCE = PROJECT_ROOT / "artwork/zinc-v1.json"
+DEFAULT_SOURCE = PROJECT_ROOT / "artwork/zinc-v2.json"
 DEFAULT_OUTPUT = PROJECT_ROOT / "common/src/main/resources/assets/create_mekanism_zinc/textures/item"
 SIZE = 16
 

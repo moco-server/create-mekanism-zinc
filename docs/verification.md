@@ -74,6 +74,12 @@ Luna's `:common:test :neoforge:test :neoforge:build` completed successfully. The
 
 The ordinary JAR is 49,681 bytes, SHA-512 `40d1bbd634d23173a77295db484f6a5b7fedba744723e30862b99d7f006e69b6de54ed2a2b15d2b5114e2e4870e6447d9c891f562d62a8386ddf993d2022c8e8`. A byte-identical copy is in the parent project's ignored `dist/cmz-trial/create-mekanism-zinc-0.2.1-dev.jar`. The prior `0.2.0-dev` JAR, live trial server and native Windows instance were not replaced. In-game texture rendering and user visual acceptance of zinc-v1 remain pending. No public release or main-pack installation was performed.
 
+## Native artwork-client startup (2026-10-02 07:20 JST)
+
+The user requested a singleplayer icon check and explicitly did not need a dedicated server. After checking that Windows Java/Prism processes were stopped, the controller verified all four existing client JAR hashes, backed up the old addon outside mods, and installed the hash-verified `0.2.1-dev` ordinary JAR. Exactly one addon and four total JARs remain. Create, Mekanism, JEI, save files and settings were preserved. The Prism profile ID remains `moco-cmz-trial-0.2.0-dev-client`.
+
+Windows Prism launched that profile without a server argument. At 07:20 JST the native client log confirmed addon `0.2.1-dev`, JEI 19.51.0.418, Microsoft Java21, NVIDIA rendering and JEI GUI atlas creation, with no ERROR line in the inspected startup log. No dedicated-server startup command was issued. This confirms native startup; in-game item appearance still awaits the user's singleplayer check. The original processing acceptance remains the `0.2.0-dev` record.
+
 ## Historical observations — addon 0.1.0-dev at commit `f5f3024`
 
 The following is a historical snapshot of the earlier six-recipe implementation, recorded 2026-10-01 at commit `f5f3024c1ee0f0a3430b8ee9c9f9b863d4f46b8a`. Its runtime directory, server port, JAR names, and GameTest count differ from the current `0.2.0-dev` procedure above. These results are retained for history and do not describe the current runtime.

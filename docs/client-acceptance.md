@@ -4,7 +4,7 @@
 
 ## 新規アイコン版の確認
 
-`0.2.1-dev` は5アイテムの16×16画像を新規制作した版です。加工確認済みの `0.2.0-dev` とは別のJARとして用意し、既存Windows試遊環境・ワールドは変更していません。見た目のユーザー確認はまだ待ちです。制作方法と外部画像のライセンス確認は [画像の記録](assets.md) にあります。
+`0.2.1-dev` は5アイテムの16×16画像を新規制作した版です。加工確認済みの `0.2.0-dev` とは別のJARとして用意しました。2026-10-02、ユーザーのシングルプレイ確認希望により、停止中のWindows試遊インスタンスを `0.2.1-dev` へ更新して起動しました。プロファイルIDは `moco-cmz-trial-0.2.0-dev-client` のままです。旧JARはmods外へ退避し、Create・Mekanism・JEIのハッシュを照合して保持しました。ワールドと設定は編集していません。07:20 JSTのログで新版とJEIの読み込み、NVIDIA描画、GUI atlas作成を確認しました。起動コマンドにサーバー接続指定はなく、専用サーバーは起動していません。見た目のユーザー確認はまだ待ちです。制作方法と外部画像のライセンス確認は [画像の記録](assets.md) にあります。
 
 親プロジェクトの `dist/cmz-trial/create-mekanism-zinc-0.2.1-dev.jar` を利用できます。既存プロファイルで試す場合はゲームを終了してから、同じMODの旧JARを新版へ置き換え、二重に導入しないでください。マルチプレイで新版を試す場合は、検証用サーバーにも同じ版の通常JARを使います。現在の25566試遊サーバーは `0.2.0-dev` のままです。以下の加工検収結果と専用サーバー／Windowsプロファイルの構成は、実際に確認した `0.2.0-dev` の記録を維持します。
 
@@ -13,7 +13,7 @@
 - 新規Prismインスタンス `moco-cmz-trial-0.2.0-dev-client` はコントローラーが作成し、Minecraft 1.21.1 / NeoForge 21.1.252 / LWJGL 3.3.3、通常3 JARのSHA-512、21レシピ、fixture非同梱を独立確認済みです。保存先は `C:\Users\wwwdd\AppData\Roaming\PrismLauncher\instances\moco-cmz-trial-0.2.0-dev-client` です。ワールド、既存設定、認証情報はコピーしていません。
 - 2026-10-01 20:37 JST、Windows版Prismから新版を起動し、0.2.0-devの読み込みとNVIDIAによる描画初期化をログで確認しました。20:39 JSTにクライアントと専用サーバー両側のログで接続・ワールド参加も確認しました。この時点では7素材の表示と3〜5倍の実加工はユーザー確認待ちでした。後続の2〜5倍の確認報告は冒頭の状態に反映しています。旧0.1.0-devインスタンスのワールド／MOD構成は変更していません。
 - Minecraft 1.21.1、NeoForge 21.1.252、Java 21、Create 6.0.10、Mekanism 10.7.19.85 (Modrinth build 85)。対応範囲は[互換性表](compatibility.md)の固定対象のみです。
-- クライアントへ入れるaddonは `dist/cmz-trial/create-mekanism-zinc-0.2.0-dev.jar`（独立MOD内では `neoforge/build/libs/create-mekanism-zinc-0.2.0-dev.jar`）です。GameTest fixtureの `-gametests.jar` は入れません。
+- 現在のクライアントaddonは `dist/cmz-trial/create-mekanism-zinc-0.2.1-dev.jar`（独立MOD内では `neoforge/build/libs/create-mekanism-zinc-0.2.1-dev.jar`）です。加工検収は旧 `0.2.0-dev` で行いました。GameTest fixtureの `-gametests.jar` は入れません。
 - 試遊サーバーは専用の新規ワールドで、IPv4 `127.0.0.1:25566` に接続します。`localhost` ではなくIPv4を直接指定してください。Windowsで `localhost` がIPv6へ解決される場合の接続失敗を避けます。
 
 ## レシピビューア

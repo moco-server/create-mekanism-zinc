@@ -50,6 +50,14 @@ The final ordinary JAR in source build output, parent `dist/cmz-trial/`, isolate
 
 At the user's request, Windows Prism launched `moco-cmz-trial-0.2.0-dev-client` with `--server 127.0.0.1:25566`. The ordinary client log confirmed addon `0.2.0-dev` and NVIDIA GeForce RTX 4060 Ti / OpenGL 4.6.0 NVIDIA 572.60 initialization. The client logged connection at 20:39:05, and the dedicated server logged a loopback player joining its world at 20:39:07. The player later disconnected normally. This establishes native startup and dedicated-server joining; seven-material appearance and 3x–5x user processing acceptance remain pending. The offline server does not authenticate accounts. Evidence is the new Prism instance's `minecraft/logs/latest.log` and the isolated server's `logs/latest.log`; no account data or raw player identifiers are copied into this record.
 
+## User acceptance through 4x and recipe viewer (2026-10-01)
+
+The user reported “4倍まで確認した”. Record successful client processing through 4x, without treating this as a per-input measured-results checklist or acceptance of all seven material displays. The 5x user check remains pending because they could not find its recipe chain without a recipe viewer.
+
+After confirming the native trial client was closed, the controller added only JEI 19.51.0.418 (Modrinth `ufHUqt9b`) to `moco-cmz-trial-0.2.0-dev-client`. Existing three JAR hashes were checked before the addition; the fourth JAR's size and SHA-512 matched the pinned Modrinth metadata. No save or existing configuration was edited. The dedicated server retains three JARs. JEI is an optional trial-client tool, not an addon dependency. Its complete pin, controls, and 5x guide are in [client acceptance](client-acceptance.md).
+
+Native Windows startup at 20:56–20:57 JST discovered JEI alongside the fixed addon/Create/Mekanism versions, initialized JEI ConfigManager and created the JEI GUI atlas without an ERROR line. World-dependent recipe registration, the displayed zinc chain, and actual 5x client processing await the user's world entry and check.
+
 ## Historical observations — addon 0.1.0-dev at commit `f5f3024`
 
 The following is a historical snapshot of the earlier six-recipe implementation, recorded 2026-10-01 at commit `f5f3024c1ee0f0a3430b8ee9c9f9b863d4f46b8a`. Its runtime directory, server port, JAR names, and GameTest count differ from the current `0.2.0-dev` procedure above. These results are retained for history and do not describe the current runtime.

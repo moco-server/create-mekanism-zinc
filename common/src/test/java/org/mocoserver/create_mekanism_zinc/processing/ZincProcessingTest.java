@@ -100,12 +100,22 @@ class ZincProcessingTest {
                     * recipes.get("dirty_dust/from_clump").outputCount()
                     * recipes.get("dust/from_dirty_dust").outputCount()
                     * recipes.get("ingot/from_dust_smelting").outputCount();
-            case DISSOLUTION -> entry.outputCount()
-                    / recipes.get("slurry/clean").inputCount()
-                    / recipes.get("crystal/from_slurry").inputCount()
-                    * recipes.get("crystal/from_slurry").outputCount();
+            case DISSOLUTION -> {
+                int washedSlurry = convertWholeBatches(entry.outputCount(), recipes.get("slurry/clean"));
+                int crystals = convertWholeBatches(washedSlurry, recipes.get("crystal/from_slurry"));
+                int shards = convertWholeBatches(crystals, recipes.get("shard/from_crystal"));
+                int clumps = convertWholeBatches(shards, recipes.get("clump/from_shard"));
+                int dirtyDust = convertWholeBatches(clumps, recipes.get("dirty_dust/from_clump"));
+                int dust = convertWholeBatches(dirtyDust, recipes.get("dust/from_dirty_dust"));
+                yield convertWholeBatches(dust, recipes.get("ingot/from_dust_smelting"));
+            }
             default -> throw new AssertionError("Not a primary raw zinc branch: " + entry.kind());
         };
+    }
+
+    private static int convertWholeBatches(int amount, ZincProcessing.ProcessingRecipe recipe) {
+        assertEquals(0, amount % recipe.inputCount(), recipe.path() + " must not leave a partial batch");
+        return amount / recipe.inputCount() * recipe.outputCount();
     }
 
     private static ZincProcessing.ProcessingRecipe recipe(String path, ZincProcessing.Kind kind, String inputId,

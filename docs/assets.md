@@ -12,7 +12,7 @@ Regenerate deterministically from the repository root:
 python3 tools/generate_icons.py
 ```
 
-A non-destructive candidate output is supported with `--output .local/artwork/zinc-v1/native-candidates`. The generator checks the entire palette and all five grids before writing. The preview [`artwork/previews/zinc-v2.png`](../artwork/previews/zinc-v2.png) renders those same native definitions directly, with an enlarged row and a 16px row. Left to right: dust, dirty dust, clump, shard, crystal. Concept images, prompts, pixel sources and previews stay outside the runtime resource tree.
+A non-destructive candidate output is supported with `--output .local/artwork/zinc-v2/native-candidates`. The generator checks the entire palette and all five grids before writing. The preview [`artwork/previews/zinc-v2.png`](../artwork/previews/zinc-v2.png) renders those same native definitions directly, with an enlarged row and a 16px row. Left to right: dust, dirty dust, clump, shard, crystal. Concept images, prompts, pixel sources and previews stay outside the runtime resource tree.
 
 ## Third-party image license review (2026-10-01)
 

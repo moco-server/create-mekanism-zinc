@@ -6,7 +6,7 @@
 
 ユーザーの実ゲーム内での指摘を受け、zinc-v1の見た目を採用確定とはせず、5枚をzinc-v2へ描き直しました。添付5枚は形・粒感・陰影の参考とし、元画像の加工・トレースではなく新規ドット配置から作成しています。粉は低く広い粒の山、凝塊は一体の鉱物片、欠片は短い折れた形、結晶は斜めの1本へ変更しました。
 
-表示名は **汚れた亜鉛の粉** と **亜鉛の凝塊** に修正しました。ほかの翻訳とスラリー名はこの改訂では変更していません。通常JARは親プロジェクトの `dist/cmz-trial/create-mekanism-zinc-0.2.2-dev.jar`、プレビューは [`artwork/previews/zinc-v2.png`](../artwork/previews/zinc-v2.png) です。レシピ・タグ・本番Javaクラスは前版とバイト単位で同一です。新版の表示確認はユーザー確認待ちで、下記のWindows起動記録は実際に導入・起動した `0.2.1-dev` の記録を維持します。
+表示名は **汚れた亜鉛の粉** と **亜鉛の凝塊** に修正しました。ほかの翻訳とスラリー名はこの改訂では変更していません。通常JARは親プロジェクトの `dist/cmz-trial/create-mekanism-zinc-0.2.2-dev.jar`、プレビューは [`artwork/previews/zinc-v2.png`](../artwork/previews/zinc-v2.png) です。レシピ・タグ・本番Javaクラスは前版とバイト単位で同一です。新版の表示確認はユーザー確認待ちです。Windows Javaが停止中だったため、2026-10-02 07:39 JSTに試遊インスタンスを新版へ更新し、サーバー接続指定なしで再起動しました。旧0.2.1-dev JARをmods外へ退避し、JEI・ワールド・設定を保持しました。ログで0.2.2-dev・JEI・NVIDIA描画・GUI atlas作成を確認しました。下記の0.2.1-dev起動記録は履歴として維持します。
 
 ## 新規アイコン版の確認
 
@@ -19,7 +19,7 @@
 - 新規Prismインスタンス `moco-cmz-trial-0.2.0-dev-client` はコントローラーが作成し、Minecraft 1.21.1 / NeoForge 21.1.252 / LWJGL 3.3.3、通常3 JARのSHA-512、21レシピ、fixture非同梱を独立確認済みです。保存先は `C:\Users\wwwdd\AppData\Roaming\PrismLauncher\instances\moco-cmz-trial-0.2.0-dev-client` です。ワールド、既存設定、認証情報はコピーしていません。
 - 2026-10-01 20:37 JST、Windows版Prismから新版を起動し、0.2.0-devの読み込みとNVIDIAによる描画初期化をログで確認しました。20:39 JSTにクライアントと専用サーバー両側のログで接続・ワールド参加も確認しました。この時点では7素材の表示と3〜5倍の実加工はユーザー確認待ちでした。後続の2〜5倍の確認報告は冒頭の状態に反映しています。旧0.1.0-devインスタンスのワールド／MOD構成は変更していません。
 - Minecraft 1.21.1、NeoForge 21.1.252、Java 21、Create 6.0.10、Mekanism 10.7.19.85 (Modrinth build 85)。対応範囲は[互換性表](compatibility.md)の固定対象のみです。
-- 現在のクライアントaddonは `dist/cmz-trial/create-mekanism-zinc-0.2.1-dev.jar`（独立MOD内では `neoforge/build/libs/create-mekanism-zinc-0.2.1-dev.jar`）です。加工検収は旧 `0.2.0-dev` で行いました。GameTest fixtureの `-gametests.jar` は入れません。
+- 現在のクライアントaddonは `dist/cmz-trial/create-mekanism-zinc-0.2.2-dev.jar`（独立MOD内では `neoforge/build/libs/create-mekanism-zinc-0.2.2-dev.jar`）です。加工検収は旧 `0.2.0-dev` で行いました。GameTest fixtureの `-gametests.jar` は入れません。
 - 試遊サーバーは専用の新規ワールドで、IPv4 `127.0.0.1:25566` に接続します。`localhost` ではなくIPv4を直接指定してください。Windowsで `localhost` がIPv6へ解決される場合の接続失敗を避けます。
 
 ## レシピビューア

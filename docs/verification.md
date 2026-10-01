@@ -88,7 +88,13 @@ Luna first changed only the two requested Japanese keys, which the controller re
 
 Both Luna's and the controller's `:common:test :neoforge:test :neoforge:build` completed successfully. The controller repeat had 13 up-to-date tasks; common dependency boundary executed with 0 artifacts. Existing unchanged-code JUnit reports show common6/NeoForge2, zero failures/errors. Independent PNG regeneration produced byte difference0. Controller JAR inspection confirmed all five new 16×16 RGBA textures match source, both exact labels, all production classes and all data JSON byte-identical to0.2.1-dev, 21 recipes, metadata0.2.2-dev, no fixture/test classes or nestedJARs. GameTests/persistence were not repeated for this display-only revision.
 
-The ordinary JAR is49,610bytes, SHA-512 `f4950702e971728bba8bf1e5538e4cce59b7e854465830746ac99df7b761884f776c925ede42ea67e4d023c6d08e0460d6092a58c613013de0fd6c2c31d205d5`; a byte-identical copy is at parent `dist/cmz-trial/create-mekanism-zinc-0.2.2-dev.jar`. Existing Windows client, live server and saved worlds were not updated in this revision. No public release or parent-pack installation occurred.
+The ordinary JAR is49,610bytes, SHA-512 `f4950702e971728bba8bf1e5538e4cce59b7e854465830746ac99df7b761884f776c925ede42ea67e4d023c6d08e0460d6092a58c613013de0fd6c2c31d205d5`; a byte-identical copy is at parent `dist/cmz-trial/create-mekanism-zinc-0.2.2-dev.jar`. At artifact preparation, the Windows client, live server and saved worlds had not been updated. The subsequent client-only installation is recorded below. No public release or parent-pack installation occurred.
+
+## Native reference-style client launch (2026-10-02 07:39 JST)
+
+Windows Java was stopped, so the controller backed up the old0.2.1-dev addon outside mods and installed the hash-verified0.2.2-dev JAR into the existing trial profile. All four client JAR hashes matched their pins; exactly one addon remains. Create, Mekanism, JEI, world saves and settings were retained. Prism launched without a server argument, and no dedicated server was started.
+
+The native log confirmed0.2.2-dev, JEI19.51.0.418, Java21, NVIDIA rendering and JEI GUI atlas creation at07:39 JST, with no ERROR line in the inspected startup log. This confirms client startup; translated item labels and icon appearance in-world still await user confirmation.
 
 ## Historical observations — addon 0.1.0-dev at commit `f5f3024`
 

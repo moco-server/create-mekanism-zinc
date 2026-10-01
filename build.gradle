@@ -4,7 +4,7 @@ plugins {
 
 allprojects {
     group = 'org.mocoserver.create_mekanism_zinc'
-    version = '0.1.0-dev'
+    version = mod_version
 }
 
 subprojects {

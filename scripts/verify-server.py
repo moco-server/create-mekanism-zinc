@@ -93,7 +93,7 @@ def prepare() -> None:
         shutil.copy2(source, target)
         if sha512(target) != expected:
             raise RuntimeError(f"Copy hash mismatch for {filename}")
-    addon = ROOT / "neoforge/build/libs/create-mekanism-zinc-0.1.0-dev.jar"
+    addon = ROOT / "neoforge/build/libs/create-mekanism-zinc-0.2.0-dev.jar"
     if not addon.is_file():
         raise RuntimeError(f"Build production jar first: {addon}")
     for old in mods.glob("create-mekanism-zinc-*.jar"):
@@ -112,7 +112,7 @@ class Server:
     def start(self) -> None:
         mods = GAME_DIR / "mods"
         if self.include_fixture:
-            fixture = ROOT / "neoforge/build/libs/create-mekanism-zinc-0.1.0-dev-gametests.jar"
+            fixture = ROOT / "neoforge/build/libs/create-mekanism-zinc-0.2.0-dev-gametests.jar"
             if not fixture.is_file():
                 raise RuntimeError(f"Build test fixture jar first: {fixture}")
             shutil.copy2(fixture, mods / fixture.name)

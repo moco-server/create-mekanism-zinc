@@ -26,5 +26,5 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: create-mekanism-zinc-jar
-          path: neoforge/build/libs/create-mekanism-zinc-0.1.0-dev.jar
+          path: neoforge/build/libs/create-mekanism-zinc-0.2.0-dev.jar
           if-no-files-found: error

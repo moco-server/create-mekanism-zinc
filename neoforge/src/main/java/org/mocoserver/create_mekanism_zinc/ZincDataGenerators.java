@@ -2,14 +2,21 @@ package org.mocoserver.create_mekanism_zinc;
 
 import java.util.concurrent.CompletableFuture;
 import mekanism.api.MekanismAPI;
+import mekanism.api.chemical.Chemical;
+import mekanism.api.chemical.ChemicalStack;
 import mekanism.api.datamaps.IMekanismDataMapTypes;
 import mekanism.api.datamaps.chemical.ChemicalSolidTag;
+import mekanism.api.datagen.recipe.builder.ChemicalCrystallizerRecipeBuilder;
+import mekanism.api.datagen.recipe.builder.ChemicalDissolutionRecipeBuilder;
+import mekanism.api.datagen.recipe.builder.FluidChemicalToChemicalRecipeBuilder;
+import mekanism.api.datagen.recipe.builder.ItemStackChemicalToItemStackRecipeBuilder;
 import mekanism.api.datagen.recipe.builder.ItemStackToItemStackRecipeBuilder;
 import mekanism.api.recipes.ingredients.creator.IngredientCreatorAccess;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
@@ -52,25 +59,82 @@ public final class ZincDataGenerators {
         protected void buildRecipes(RecipeOutput output) {
             for (var recipe : ZincProcessing.recipes()) {
                 var id = ResourceLocation.fromNamespaceAndPath(ZincContent.MOD_ID, "processing/zinc/" + recipe.path());
-                var outputItem = BuiltInRegistries.ITEM.get(ResourceLocation.parse(recipe.outputId()));
-                var result = new ItemStack(outputItem, recipe.outputCount());
-                if (recipe.kind() == ZincProcessing.Kind.ENRICHING || recipe.kind() == ZincProcessing.Kind.CRUSHING) {
-                    var inputId = tagId(recipe.inputId());
-                    var tag = TagKey.create(Registries.ITEM, inputId);
-                    var input = IngredientCreatorAccess.item().from(tag, recipe.inputCount());
-                    var builder = recipe.kind() == ZincProcessing.Kind.ENRICHING
-                            ? ItemStackToItemStackRecipeBuilder.enriching(input, result)
-                            : ItemStackToItemStackRecipeBuilder.crushing(input, result);
-                    builder.build(output, id);
-                } else {
-                    var inputItem = BuiltInRegistries.ITEM.get(ResourceLocation.parse(recipe.inputId()));
-                    var input = Ingredient.of(inputItem);
-                    var builder = recipe.kind() == ZincProcessing.Kind.SMELTING
-                            ? SimpleCookingRecipeBuilder.smelting(input, RecipeCategory.MISC, result, recipe.experience(), recipe.cookingTicks())
-                            : SimpleCookingRecipeBuilder.blasting(input, RecipeCategory.MISC, result, recipe.experience(), recipe.cookingTicks());
-                    builder.unlockedBy("has_zinc_dust", has(inputItem)).save(output, id);
+                switch (recipe.kind()) {
+                    case ENRICHING, CRUSHING -> {
+                        var input = itemInput(recipe);
+                        var result = new ItemStack(item(recipe.outputId()), recipe.outputCount());
+                        var builder = recipe.kind() == ZincProcessing.Kind.ENRICHING
+                                ? ItemStackToItemStackRecipeBuilder.enriching(input, result)
+                                : ItemStackToItemStackRecipeBuilder.crushing(input, result);
+                        builder.build(output, id);
+                    }
+                    case PURIFYING, INJECTING -> {
+                        var input = itemInput(recipe);
+                        var chemical = chemicalInput(recipe.chemicalInput());
+                        var result = new ItemStack(item(recipe.outputId()), recipe.outputCount());
+                        var builder = recipe.kind() == ZincProcessing.Kind.PURIFYING
+                                ? ItemStackChemicalToItemStackRecipeBuilder.purifying(input, chemical, result, recipe.perTickUsage())
+                                : ItemStackChemicalToItemStackRecipeBuilder.injecting(input, chemical, result, recipe.perTickUsage());
+                        builder.build(output, id);
+                    }
+                    case DISSOLUTION -> {
+                        var input = itemInput(recipe);
+                        var acid = chemicalInput(recipe.chemicalInput());
+                        var slurry = new ChemicalStack(chemical(recipe.outputId()), recipe.outputCount());
+                        ChemicalDissolutionRecipeBuilder.dissolution(input, acid, slurry, recipe.perTickUsage()).build(output, id);
+                    }
+                    case WASHING -> {
+                        var slurry = chemicalInput(recipe.inputId(), recipe.inputCount());
+                        var waterTag = TagKey.create(Registries.FLUID, ResourceLocation.parse(recipe.fluidInput().tag()));
+                        var water = IngredientCreatorAccess.fluid().from(waterTag, recipe.fluidInput().amount());
+                        var cleanSlurry = new ChemicalStack(chemical(recipe.outputId()), recipe.outputCount());
+                        FluidChemicalToChemicalRecipeBuilder.washing(water, slurry, cleanSlurry).build(output, id);
+                    }
+                    case CRYSTALLIZING -> {
+                        var cleanSlurry = chemicalInput(recipe.inputId(), recipe.inputCount());
+                        var crystals = new ItemStack(item(recipe.outputId()), recipe.outputCount());
+                        ChemicalCrystallizerRecipeBuilder.crystallizing(cleanSlurry, crystals).build(output, id);
+                    }
+                    case SMELTING, BLASTING -> {
+                        var outputItem = item(recipe.outputId());
+                        var result = new ItemStack(outputItem, recipe.outputCount());
+                        var inputItem = item(recipe.inputId());
+                        var input = Ingredient.of(inputItem);
+                        var builder = recipe.kind() == ZincProcessing.Kind.SMELTING
+                                ? SimpleCookingRecipeBuilder.smelting(input, RecipeCategory.MISC, result, recipe.experience(), recipe.cookingTicks())
+                                : SimpleCookingRecipeBuilder.blasting(input, RecipeCategory.MISC, result, recipe.experience(), recipe.cookingTicks());
+                        builder.unlockedBy("has_zinc_dust", has(inputItem)).save(output, id);
+                    }
                 }
             }
+        }
+
+        private static mekanism.api.recipes.ingredients.ItemStackIngredient itemInput(ZincProcessing.ProcessingRecipe recipe) {
+            if (recipe.inputTag()) {
+                return IngredientCreatorAccess.item().from(TagKey.create(Registries.ITEM, ResourceLocation.parse(recipe.inputId())), recipe.inputCount());
+            }
+            return IngredientCreatorAccess.item().from(item(recipe.inputId()), recipe.inputCount());
+        }
+
+        private static mekanism.api.recipes.ingredients.ChemicalStackIngredient chemicalInput(ZincProcessing.ChemicalInput input) {
+            return IngredientCreatorAccess.chemicalStack().fromHolder(chemical(input.id()), input.amount());
+        }
+
+        private static mekanism.api.recipes.ingredients.ChemicalStackIngredient chemicalInput(String id, long amount) {
+            return IngredientCreatorAccess.chemicalStack().fromHolder(chemical(id), amount);
+        }
+
+        private static net.minecraft.world.item.Item item(String id) {
+            return BuiltInRegistries.ITEM.get(ResourceLocation.parse(id));
+        }
+
+        private static net.minecraft.core.Holder<Chemical> chemical(String id) {
+            var location = ResourceLocation.parse(id);
+            if (location.getNamespace().equals(ZincContent.MOD_ID)) {
+                return ZincRegistries.REGISTERED_CHEMICALS.get(location.getPath());
+            }
+            var key = ResourceKey.create(MekanismAPI.CHEMICAL_REGISTRY_NAME, location);
+            return MekanismAPI.CHEMICAL_REGISTRY.getHolder(key).orElseThrow(() -> new IllegalStateException("Unknown Mekanism chemical " + id));
         }
     }
 

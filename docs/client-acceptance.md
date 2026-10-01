@@ -1,6 +1,6 @@
 # クライアント受け入れ確認
 
-3〜5倍ラインのGUI・加工結果はユーザー確認待ちです。ユーザーからは旧版の2倍加工について「一応2倍は動作してた」と報告済みです。今回の確認は Issue #7 の全体完了や公開配布を意味しません。
+3〜5倍ラインのGUI・加工結果はユーザー確認待ちです。ユーザーからは2倍加工について「2倍は問題なく動作してた」と報告済みです。今回の確認は Issue #7 の全体完了や公開配布を意味しません。
 
 ## 対象プロファイル
 
@@ -48,20 +48,21 @@ JEI等で21件のレシピ登録を確認し、実加工では通常の電力・
 | 2倍 | Enrichment Chamber: `c:ores/zinc` 1個 | Zinc Dust 2個 |
 | 2倍 | Enrichment Chamber: `c:raw_materials/zinc` 3個 | Zinc Dust 4個 |
 | 2倍 | Enrichment Chamber: `c:storage_blocks/raw_zinc` 1個 | Zinc Dust 12個 |
-| 3倍 | Purification Chamber: zinc ore 1個 → Crusher: Zinc Clump 3個 → Enrichment Chamber: Dirty Zinc Dust → Zinc Dust | Purification Chamberに酸素1単位/tick。各後段レシピは1入力→1出力 |
-| 3倍 | Purification Chamber: raw zinc 1個 → 同じCrusher／Enrichment Chamber | 酸素1単位/tick。原石1個からZinc Dust 2個 |
-| 3倍 | Purification Chamber: raw zinc block 1個 → 同じ後段 | 酸素2単位/tick。ブロックからZinc Dust 18個 |
-| 4倍 | Chemical Injection Chamber: zinc ore 1個 → Purification Chamber: Zinc Shard 4個 → clumpへ変換し後段処理 | Injection Chamberにhydrogen chloride 1単位/tick。各ShardからClump 1個 |
-| 4倍 | Chemical Injection Chamber: raw zinc 3個 → 同じ後段 | hydrogen chloride 1単位/tick。Shard 8個 |
-| 4倍 | Chemical Injection Chamber: raw zinc block 1個 → 同じ後段 | hydrogen chloride 2単位/tick。Shard 24個 |
-| 5倍 | Chemical Dissolution Chamber: ore 1個、またはraw zinc 3個、またはraw zinc block 1個 | sulfuric acid は通常1／1／2単位/tick。dirty slurryは順に1000／2000／6000 mB |
-| 5倍 | Dirty Zinc slurryをWasherで洗浄し、Crystallizerでclean slurryを結晶化 | 水5 mBでslurry 1 mB洗浄。clean slurry 200 mBあたりZinc Crystal 1個。CrystalからShard 1個へ変換 |
+| 既存基礎 | Crusher: `c:ingots/zinc` 1個 | Zinc Dust 1個 |
+| 3倍 | Purification Chamber: zinc ore 1個 → Crusher: Zinc Clump 3個 → Enrichment Chamber: Dirty Zinc Dust → Zinc Dust | 補助oxygen amount 1、`per_tick_usage=true`。各後段レシピは1入力→1出力 |
+| 3倍 | Purification Chamber: raw zinc 1個 → 同じCrusher／Enrichment Chamber | 補助oxygen amount 1、`per_tick_usage=true`。原石1個からZinc Dust 2個 |
+| 3倍 | Purification Chamber: raw zinc block 1個 → 同じ後段 | 補助oxygen amount 2、`per_tick_usage=true`。ブロックからZinc Dust 18個 |
+| 4倍 | Chemical Injection Chamber: zinc ore 1個 → Purification Chamber: Zinc Shard 4個 → clumpへ変換し後段処理 | 補助hydrogen chloride amount 1、`per_tick_usage=true`。各ShardからClump 1個 |
+| 4倍 | Chemical Injection Chamber: raw zinc 3個 → 同じ後段 | 補助hydrogen chloride amount 1、`per_tick_usage=true`。Shard 8個 |
+| 4倍 | Chemical Injection Chamber: raw zinc block 1個 → 同じ後段 | 補助hydrogen chloride amount 2、`per_tick_usage=true`。Shard 24個 |
+| 5倍 | Chemical Dissolution Chamber: ore 1個、またはraw zinc 3個、またはraw zinc block 1個 | 補助sulfuric acid amount 1／1／2、`per_tick_usage=true`。dirty slurryは順に1000／2000／6000 mB |
+| 5倍 | Dirty Zinc slurryをWasherで洗浄し、Crystallizerでclean slurryを結晶化。Crystal 1個をInjection ChamberでShardへ、ShardをPurification ChamberでClumpへ変換 | 水5 mBでslurry 1 mB洗浄。clean slurry 200 mB→Zinc Crystal 1個。Crystal→Shardはhydrogen chloride amount 1、Shard→Clumpはoxygen amount 1、いずれも`per_tick_usage=true` |
 
-補助化学物質なし、電力なし、水不足、結晶化に必要なclean slurry 200 mB未満の条件で入力が消費されないことも確認します。Enrichment Chamberでraw zinc 1個と2個をそれぞれ試し、入力が保持されて出力がないことを確認します。Crushed Raw Zincと精錬済みZinc Ingotは3〜5倍入口に使えないことを確認します。生産機械の進捗値を手で変更して結果を早めないでください。
+補助化学物質なし、電力なし、水不足、結晶化に必要なclean slurry 200 mB未満の条件で入力が消費されないことも確認します。Enrichment Chamberでraw zinc 1個と2個をそれぞれ試し、入力が保持されて出力がないことを確認します。4倍Injection Chamberと5倍Dissolution Chamberでも原石1個・2個は保持され、出力がないことを確認します。Crushed Raw Zincと精錬済みZinc Ingotは3〜5倍入口に使えないことを確認します。生産機械の進捗値を手で変更して結果を早めないでください。
 
 レシピの `per_tick_usage=true` と補助Chemical amountの基準はpurification / injection / dissolutionで通常1単位/tick、raw zinc blockでは2単位/tickです。実際の消費量、加工速度、電力は対象版Mekanismの機械設定・統計倍率・導入upgradeに従うため、常に固定量とは限りません。水とslurryの比率、crystallizerの200 mBごとの出力はレシピ量として確認します。
 
-3〜5倍ラインの末端は次の共有手順です。CrystalはChemical Injection Chamberでhydrogen chlorideを使ってShardへ、ShardはPurification Chamberでoxygenを使ってClumpへ、CrusherでDirty Zinc Dustへ、Enrichment ChamberでZinc Dustへ加工し、FurnaceまたはBlast FurnaceでCreate Zinc Ingotにします。粉の精錬はFurnace 200 ticks／Blast Furnace 100 ticks、どちらも経験値0.35です。
+3〜5倍ラインの末端は次の共有手順です。CrystalはChemical Injection Chamberでhydrogen chloride amount 1を使ってShardへ、ShardはPurification Chamberでoxygen amount 1を使ってClumpへ（どちらも`per_tick_usage=true`）、CrusherでDirty Zinc Dustへ、Enrichment ChamberでZinc Dustへ加工し、FurnaceまたはBlast FurnaceでCreate Zinc Ingotにします。粉の精錬はFurnace 200 ticks／Blast Furnace 100 ticks、どちらも経験値0.35です。
 
 | ラインと入力 | 最終インゴット期待数 |
 | --- | ---: |

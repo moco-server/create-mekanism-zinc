@@ -1,0 +1,9 @@
+{
+  "item.create_mekanism_zinc.dust_zinc": "亜鉛の粉",
+  "item.create_mekanism_zinc.dirty_dust_zinc": "不純な亜鉛の粉",
+  "item.create_mekanism_zinc.clump_zinc": "亜鉛の塊",
+  "item.create_mekanism_zinc.shard_zinc": "亜鉛の欠片",
+  "item.create_mekanism_zinc.crystal_zinc": "亜鉛の結晶",
+  "chemical.create_mekanism_zinc.dirty_zinc": "不純な亜鉛スラリー",
+  "chemical.create_mekanism_zinc.clean_zinc": "精製亜鉛スラリー"
+}

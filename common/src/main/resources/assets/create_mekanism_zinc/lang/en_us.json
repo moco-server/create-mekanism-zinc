@@ -1,0 +1,9 @@
+{
+  "item.create_mekanism_zinc.dust_zinc": "Zinc Dust",
+  "item.create_mekanism_zinc.dirty_dust_zinc": "Dirty Zinc Dust",
+  "item.create_mekanism_zinc.clump_zinc": "Zinc Clump",
+  "item.create_mekanism_zinc.shard_zinc": "Zinc Shard",
+  "item.create_mekanism_zinc.crystal_zinc": "Zinc Crystal",
+  "chemical.create_mekanism_zinc.dirty_zinc": "Dirty Zinc Slurry",
+  "chemical.create_mekanism_zinc.clean_zinc": "Clean Zinc Slurry"
+}

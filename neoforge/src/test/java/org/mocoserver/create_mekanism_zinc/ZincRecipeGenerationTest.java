@@ -8,8 +8,14 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 
 class ZincRecipeGenerationTest {
@@ -22,10 +28,13 @@ class ZincRecipeGenerationTest {
             "ingot/from_dust_blasting", new ExpectedRecipe("minecraft:blasting", "create_mekanism_zinc:dust_zinc", false, 1, "create:zinc_ingot", 1, 100, 0.35f));
 
     @Test
-    void generatedRecipesMatchIndependentApprovedCoefficients() throws IOException {
-        var recipeFiles = EXPECTED.keySet().stream().map(path -> "data/create_mekanism_zinc/recipe/processing/zinc/" + path + ".json").toList();
+    void generatedRecipesMatchIndependentApprovedCoefficients() throws IOException, URISyntaxException {
+        var recipeFiles = generatedRecipePaths();
+        assertEquals(EXPECTED.keySet(), recipeFiles);
         assertEquals(6, recipeFiles.size());
-        for (var path : recipeFiles) {
+        var recipePaths = recipeFiles.stream()
+                .map(path -> "data/create_mekanism_zinc/recipe/processing/zinc/" + path + ".json").toList();
+        for (var path : recipePaths) {
             var recipe = json(path);
             var expected = EXPECTED.get(path.substring("data/create_mekanism_zinc/recipe/processing/zinc/".length(), path.length() - 5));
             assertEquals(expected.type(), recipe.get("type").getAsString(), path);
@@ -42,6 +51,21 @@ class ZincRecipeGenerationTest {
                 assertEquals(expected.experience(), recipe.get("experience").getAsFloat(), path);
             }
             assertFalse(recipe.toString().contains("crushed_raw_zinc"), path);
+        }
+    }
+
+    private static Set<String> generatedRecipePaths() throws IOException, URISyntaxException {
+        var resourceRoot = "data/create_mekanism_zinc/recipe/processing/zinc";
+        var directory = ZincRecipeGenerationTest.class.getClassLoader().getResource(resourceRoot);
+        if (directory == null) throw new AssertionError("Missing generated recipe directory: " + resourceRoot);
+        var root = Path.of(directory.toURI());
+        try (Stream<Path> paths = Files.walk(root)) {
+            return paths.filter(Files::isRegularFile)
+                    .filter(path -> path.getFileName().toString().endsWith(".json"))
+                    .map(root::relativize)
+                    .map(Path::toString)
+                    .map(path -> path.replace('\\', '/').substring(0, path.length() - ".json".length()))
+                    .collect(Collectors.toUnmodifiableSet());
         }
     }
 

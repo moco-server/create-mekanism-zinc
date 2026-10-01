@@ -1,10 +1,8 @@
 # Zinc item artwork
 
-## Current artwork: zinc-v2
+## Current artwork: zinc-v2 crops (0.2.3-dev)
 
-The five production icons are original 16×16 RGBA PNGs for dust, dirty dust, clump, shard and crystal. In `0.2.2-dev`, zinc-v2 replaces zinc-v1 after the user found the first artwork set visually inconsistent beside other processing materials. It uses muted gray-green shading, a broad granular dust mound, a single solid elongated clump, a short broken shard and one oblique crystal. Dirty dust adds restrained darker grains. User in-game visual acceptance of this revision is pending.
-
-The user supplied five small screenshots as references for shape, shading and grain, in dust/dirty dust/clump/shard/crystal order, and explicitly requested newly drawn artwork rather than modification of the existing images. The controller used built-in `image_gen` to create one original style-study board with those screenshots labeled as style/category references, not edit targets. The study and complete prompt are under [`artwork/concepts/zinc-v2`](../artwork/concepts/zinc-v2). The controller separately authored the production pixel positions in [`artwork/zinc-v2.json`](../artwork/zinc-v2.json). No screenshot or generated board is read, sampled, cropped, resized or recolored by the PNG generator; it renders only the editable native grids. The reference screenshots are not included in the repository or runtime JAR. These project artwork sources and production PNGs are distributed under the project MIT license; see [`LICENSE`](../LICENSE).
+The five production icons are transparent 512×512 RGBA PNGs cut from the original 2172×724 RGBA8 artwork canvas at [`artwork/concepts/zinc-v2/style-study.png`](../artwork/concepts/zinc-v2/style-study.png), following the user's request to use crops from that single canvas. The controller reviewed the design and fixed these exclusive-right/bottom boxes in [`artwork/zinc-v2-crops.json`](../artwork/zinc-v2-crops.json): dust `[42,292,436,585]`, dirty dust `[504,292,888,586]`, clump `[946,214,1303,590]`, shard `[1383,238,1707,585]`, and crystal `[1829,195,2130,596]`. Each unchanged crop is centered on its canvas with integer offsets. Pixels within each box, including their original alpha values, are copied as-is; there is no resize, recolor, or alpha threshold. The source SHA256 and dimensions are recorded in the crop manifest and verified before generation. User in-game visual acceptance of the 0.2.3-dev icons is pending.
 
 Regenerate deterministically from the repository root:
 
@@ -12,7 +10,9 @@ Regenerate deterministically from the repository root:
 python3 tools/generate_icons.py
 ```
 
-A non-destructive candidate output is supported with `--output .local/artwork/zinc-v2/native-candidates`. The generator checks the entire palette and all five grids before writing. The preview [`artwork/previews/zinc-v2.png`](../artwork/previews/zinc-v2.png) renders those same native definitions directly, with an enlarged row and a 16px row. Left to right: dust, dirty dust, clump, shard, crystal. Concept images, prompts, pixel sources and previews stay outside the runtime resource tree.
+The standard-library PNG reader checks the source hash, dimensions, chunk CRCs and RGBA8 format, then handles PNG filters 0–4. All five encoded outputs are prepared before files are written. Use `--output .local/artwork/zinc-v2/cropped-candidates` for a non-destructive candidate build. The preview [`artwork/previews/zinc-v2-cropped.png`](../artwork/previews/zinc-v2-cropped.png) places the five actual production PNGs side-by-side at their native 512×512 size. The previous native 16×16 zinc-v2 grid renderer is preserved as [`tools/render_native_icons.py`](../tools/render_native_icons.py) for historical reconstruction; its default output is isolated under `.local/`.
+
+The controller created one original style-study canvas using the user's reference screenshots as shape/style guidance; the screenshots themselves are not included. The canvas is used only through the five fixed crop rectangles listed above. Project artwork sources and production PNGs are distributed under the project MIT license; see [`LICENSE`](../LICENSE).
 
 ## Third-party image license review (2026-10-01)
 
@@ -29,4 +29,4 @@ The original `0.1.0-dev` and accepted `0.2.0-dev` icons were hand-authored tempo
 
 ## Historical zinc-v1 artwork
 
-The `0.2.1-dev` version used five independently generated concepts without image inputs, then separately authored native pixel grids. That set had dark contours, three-lobed clumps and multi-pronged crystal clusters. The user found that these features stood out beside the other ore-processing items; zinc-v2 reduces contour/highlight contrast and changes those silhouettes. The v1 concepts, prompts, native grids and preview remain under `artwork/` for history. They are no longer the generator's default input.
+The `0.2.1-dev` version used five independently generated concepts without image inputs, then separately authored native pixel grids. `0.2.2-dev` also used a native 16×16 grid renderer with a separately authored grid based on the zinc-v2 study's intended silhouettes. These native-grid steps remain available in Git history and `tools/render_native_icons.py`; neither renderer is the current production pipeline. The earlier v1 concepts, prompts, grids and previews remain under `artwork/` for history.

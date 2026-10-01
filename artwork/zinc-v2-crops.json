@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "source": "artwork/concepts/zinc-v2/style-study.png",
+  "source_sha256": "3c27148393b58faf8b5a77aa121ab3498d351677333bf9315063d1b0171f928c",
+  "source_width": 2172,
+  "source_height": 724,
+  "canvas_size": 512,
+  "icons": {
+    "dust_zinc": [42, 292, 436, 585],
+    "dirty_dust_zinc": [504, 292, 888, 586],
+    "clump_zinc": [946, 214, 1303, 590],
+    "shard_zinc": [1383, 238, 1707, 585],
+    "crystal_zinc": [1829, 195, 2130, 596]
+  }
+}

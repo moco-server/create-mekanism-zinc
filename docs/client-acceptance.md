@@ -5,7 +5,7 @@
 ## 対象プロファイル
 
 - 新規Prismインスタンス `moco-cmz-trial-0.2.0-dev-client` はコントローラーが作成し、Minecraft 1.21.1 / NeoForge 21.1.252 / LWJGL 3.3.3、通常3 JARのSHA-512、21レシピ、fixture非同梱を独立確認済みです。保存先は `C:\Users\wwwdd\AppData\Roaming\PrismLauncher\instances\moco-cmz-trial-0.2.0-dev-client` です。ワールド、既存設定、認証情報はコピーしていません。
-- Windows側でのGUI起動・実加工は未実施です。旧0.1.0-devインスタンスは保持し、固定依存JARを読み取りコピーしただけで、旧インスタンスのワールド／MOD構成は変更していません。
+- 2026-10-01 20:37 JST、Windows版Prismから新版を起動し、0.2.0-devの読み込みとNVIDIAによる描画初期化をログで確認しました。20:39 JSTにクライアントと専用サーバー両側のログで接続・ワールド参加も確認しました。7素材の表示と3〜5倍の実加工はユーザー確認待ちです。旧0.1.0-devインスタンスのワールド／MOD構成は変更していません。
 - Minecraft 1.21.1、NeoForge 21.1.252、Java 21、Create 6.0.10、Mekanism 10.7.19.85 (Modrinth build 85)。対応範囲は[互換性表](compatibility.md)の固定対象のみです。
 - クライアントへ入れるaddonは `dist/cmz-trial/create-mekanism-zinc-0.2.0-dev.jar`（独立MOD内では `neoforge/build/libs/create-mekanism-zinc-0.2.0-dev.jar`）です。GameTest fixtureの `-gametests.jar` は入れません。
 - 試遊サーバーは専用の新規ワールドで、IPv4 `127.0.0.1:25566` に接続します。`localhost` ではなくIPv4を直接指定してください。Windowsで `localhost` がIPv6へ解決される場合の接続失敗を避けます。
@@ -78,4 +78,4 @@ JEI等で21件のレシピ登録を確認し、実加工では通常の電力・
 
 ## 結果記録
 
-日付、プロファイル名、構成、ログイン結果、素材名表示、各段階の実測入力／出力個数、補助入力の消費、再起動後の保存内容を記録してください。3〜5倍のユーザー確認、認証済みログイン、画像品質の改善はまだ完了していません。
+日付、プロファイル名、構成、ログイン結果、素材名表示、各段階の実測入力／出力個数、補助入力の消費、再起動後の保存内容を記録してください。Windowsでの起動・専用サーバー参加は確認済みですが、7素材の表示、3〜5倍のユーザー確認、画像品質の改善はまだ完了していません。専用サーバーのアカウント認証は検証対象外です。

@@ -46,6 +46,10 @@ The controller accepted each Luna implementation task and its review corrections
 
 The final ordinary JAR in source build output, parent `dist/cmz-trial/`, isolated dedicated server, and fresh Windows Prism instance has the identical SHA-512 recorded above. All three trial/runtime JARs (the addon and two pinned dependencies) were verified against their recorded hashes; no fixture remains in either ordinary server or client. The controller then started the ordinary trial server at 19:38 JST; its bind is `127.0.0.1:25566`, and Windows PowerShell TCP reachability was confirmed. This proves transport reachability only. Windows GUI startup and 3x–5x user acceptance remain pending.
 
+## Native client startup (2026-10-01 20:37–20:39 JST)
+
+At the user's request, Windows Prism launched `moco-cmz-trial-0.2.0-dev-client` with `--server 127.0.0.1:25566`. The ordinary client log confirmed addon `0.2.0-dev` and NVIDIA GeForce RTX 4060 Ti / OpenGL 4.6.0 NVIDIA 572.60 initialization. The client logged connection at 20:39:05, and the dedicated server logged a loopback player joining its world at 20:39:07. The player later disconnected normally. This establishes native startup and dedicated-server joining; seven-material appearance and 3x–5x user processing acceptance remain pending. The offline server does not authenticate accounts. Evidence is the new Prism instance's `minecraft/logs/latest.log` and the isolated server's `logs/latest.log`; no account data or raw player identifiers are copied into this record.
+
 ## Historical observations — addon 0.1.0-dev at commit `f5f3024`
 
 The following is a historical snapshot of the earlier six-recipe implementation, recorded 2026-10-01 at commit `f5f3024c1ee0f0a3430b8ee9c9f9b863d4f46b8a`. Its runtime directory, server port, JAR names, and GameTest count differ from the current `0.2.0-dev` procedure above. These results are retained for history and do not describe the current runtime.

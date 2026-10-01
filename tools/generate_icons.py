@@ -1,75 +1,129 @@
-"""Generate original provisional zinc processing item icons using only Python stdlib."""
+"""Render zinc item icons from a validated 16x16 character-grid artwork file."""
 
+import argparse
+import json
 from pathlib import Path
 import struct
+import sys
 import zlib
 
-ROOT = Path(__file__).resolve().parents[1] / "common/src/main/resources/assets/create_mekanism_zinc"
-COLORS = {
-    "dust_zinc": (191, 157, 91),
-    "dirty_dust_zinc": (100, 111, 105),
-    "clump_zinc": (125, 142, 127),
-    "shard_zinc": (143, 176, 163),
-    "crystal_zinc": (182, 200, 192),
-}
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+ICON_IDS = (
+    "dust_zinc",
+    "dirty_dust_zinc",
+    "clump_zinc",
+    "shard_zinc",
+    "crystal_zinc",
+)
+DEFAULT_SOURCE = PROJECT_ROOT / "artwork/zinc-v1.json"
+DEFAULT_OUTPUT = PROJECT_ROOT / "common/src/main/resources/assets/create_mekanism_zinc/textures/item"
+SIZE = 16
 
 
-def png(path, pixels):
+class ArtworkError(ValueError):
+    """Raised when the artwork JSON does not match the supported schema."""
+
+
+def encode_png(pixels):
+    """Encode a validated RGBA pixel grid as a 16x16 PNG."""
+
     def chunk(kind, data):
-        return struct.pack(">I", len(data)) + kind + data + struct.pack(">I", zlib.crc32(kind + data))
+        crc = zlib.crc32(kind + data) & 0xFFFFFFFF
+        return struct.pack(">I", len(data)) + kind + data + struct.pack(">I", crc)
 
     rows = b"".join(b"\0" + b"".join(bytes(pixel) for pixel in row) for row in pixels)
     data = b"\x89PNG\r\n\x1a\n"
-    data += chunk(b"IHDR", struct.pack(">2I5B", 16, 16, 8, 6, 0, 0, 0))
+    data += chunk(b"IHDR", struct.pack(">2I5B", SIZE, SIZE, 8, 6, 0, 0, 0))
     data += chunk(b"IDAT", zlib.compress(rows, 9))
     data += chunk(b"IEND", b"")
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_bytes(data)
+    return data
 
 
-def icon(name, color):
-    pixels = [[(0, 0, 0, 0) for _ in range(16)] for _ in range(16)]
-    dark = tuple(max(0, c - 45) for c in color)
-    light = tuple(min(255, c + 38) for c in color)
+def validate_artwork(document):
+    """Validate all input and return all five expanded pixel grids."""
+    if not isinstance(document, dict):
+        raise ArtworkError("root must be a JSON object")
+    if type(document.get("version")) is not int or document["version"] != 1:
+        raise ArtworkError("version must be integer 1")
+    if type(document.get("size")) is not int or document["size"] != SIZE:
+        raise ArtworkError("size must be integer 16")
 
-    def put(x, y, value):
-        if 0 <= x < 16 and 0 <= y < 16:
-            pixels[y][x] = (*value, 255)
+    palette = document.get("palette")
+    if not isinstance(palette, dict) or not palette:
+        raise ArtworkError("palette must be a non-empty object")
+    rgba_palette = {}
+    for symbol, channels in palette.items():
+        if not isinstance(symbol, str) or len(symbol) != 1:
+            raise ArtworkError(f"palette key {symbol!r} must be one character")
+        if (not isinstance(channels, list) or len(channels) != 4 or
+                any(type(channel) is not int or not 0 <= channel <= 255 for channel in channels)):
+            raise ArtworkError(f"palette entry {symbol!r} must contain four integer channels from 0 to 255")
+        rgba_palette[symbol] = tuple(channels)
 
-    # Each processing stage has a distinct silhouette as well as a different tint.
-    if name.endswith("dust_zinc") and not name.startswith("dirty"):
-        points = [(4, 4), (8, 3), (11, 5), (5, 8), (9, 9), (3, 11), (12, 12), (7, 13)]
-        for x, y in points:
-            for dx, dy in ((0, 0), (1, 0), (0, 1)):
-                put(x + dx, y + dy, light if (x + y) % 2 else color)
-    elif name.startswith("dirty"):
-        for y in range(4, 12):
-            for x in range(3, 13):
-                if (x * 3 + y * 5) % 4 != 0:
-                    put(x, y, dark if (x + y) % 3 == 0 else color)
-    elif name.startswith("clump"):
-        for x, y, radius in ((5, 8, 3), (9, 7, 3), (8, 11, 2)):
-            for dy in range(-radius, radius + 1):
-                for dx in range(-radius, radius + 1):
-                    if abs(dx) + abs(dy) <= radius + 1:
-                        put(x + dx, y + dy, light if dy < -1 else color)
-    elif name.startswith("shard"):
-        for y in range(3, 13):
-            span = 1 if y < 7 else 2
-            for x in range(8 - span, 9 + span):
-                put(x + (1 if y > 8 else 0), y, light if x <= 8 else color)
-    else:  # crystal
-        for y in range(3, 13):
-            half = min(y - 2, 12 - y, 4)
-            for x in range(8 - half, 9 + half):
-                put(x, y, light if x <= 8 else color)
+    icons = document.get("icons")
+    if not isinstance(icons, dict):
+        raise ArtworkError("icons must be an object")
+    actual_ids = set(icons)
+    expected_ids = set(ICON_IDS)
+    if actual_ids != expected_ids:
+        missing = sorted(expected_ids - actual_ids)
+        extra = sorted(actual_ids - expected_ids)
+        raise ArtworkError(f"icons must contain exactly the five required IDs (missing={missing}, extra={extra})")
 
-    # Shared dark lower edge makes the hand-drawn silhouettes read at 16x16.
-    for x in range(4, 12):
-        if pixels[12][x][3]:
-            pixels[13][x] = (*dark, 255)
-    return pixels
+    expanded = {}
+    for icon_id in ICON_IDS:
+        rows = icons[icon_id]
+        if not isinstance(rows, list) or len(rows) != SIZE:
+            raise ArtworkError(f"icons.{icon_id} must contain exactly {SIZE} rows")
+        pixels = []
+        for row_number, row in enumerate(rows, start=1):
+            if not isinstance(row, str) or len(row) != SIZE:
+                raise ArtworkError(f"icons.{icon_id} row {row_number} must be a {SIZE}-character string")
+            undefined = sorted(set(row) - rgba_palette.keys())
+            if undefined:
+                raise ArtworkError(f"icons.{icon_id} row {row_number} uses undefined palette character(s): {undefined}")
+            pixels.append([rgba_palette[symbol] for symbol in row])
+        expanded[icon_id] = pixels
+    return expanded
 
 
-for item, tint in COLORS.items():
-    png(ROOT / "textures/item" / f"{item}.png", icon(item, tint))
+def load_artwork(source):
+    try:
+        with source.open(encoding="utf-8") as artwork_file:
+            document = json.load(artwork_file)
+    except json.JSONDecodeError as error:
+        raise ArtworkError(f"invalid JSON at line {error.lineno}, column {error.colno}: {error.msg}") from error
+    return validate_artwork(document)
+
+
+def parse_args(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--source", type=Path, default=DEFAULT_SOURCE, help="artwork JSON input")
+    parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT, help="directory for generated PNG files")
+    return parser.parse_args(argv)
+
+
+def main(argv=None):
+    args = parse_args(argv)
+    try:
+        icons = load_artwork(args.source)
+    except (OSError, ArtworkError) as error:
+        print(f"generate_icons: {error}", file=sys.stderr)
+        return 2
+
+    # Encode every output before touching the destination, after the full input
+    # has passed schema and pixel-grid validation.
+    pngs = {icon_id: encode_png(pixels) for icon_id, pixels in icons.items()}
+    try:
+        args.output.mkdir(parents=True, exist_ok=True)
+        for icon_id, image in pngs.items():
+            (args.output / f"{icon_id}.png").write_bytes(image)
+    except OSError as error:
+        print(f"generate_icons: could not write PNG output: {error}", file=sys.stderr)
+        return 2
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

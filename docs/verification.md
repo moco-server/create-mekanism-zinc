@@ -1,6 +1,6 @@
 # Verification record
 
-## Pinned runtime
+## Pinned runtime for accepted processing build (`0.2.0-dev`)
 
 - Minecraft 1.21.1, NeoForge 21.1.252, Java 21 (`21.0.12.1+1-LTS`), Gradle 9.2.1, ModDevGradle 2.0.148.
 - Create 6.0.10, pinned Modrinth file `UjX6dr61`; Mekanism 10.7.19.85, pinned Modrinth file `5KzzycBT` (installed metadata version 10.7.19).
@@ -63,6 +63,16 @@ Native Windows startup at 20:56–20:57 JST discovered JEI alongside the fixed a
 Following their earlier successful 2x and through-4x reports, the user reported “5倍ラインも正常動作を確認した”. Client processing-line acceptance for 2x–5x is complete based on these user observations. This report supplies the previously missing 5x client result; it does not provide measured results for each input variant or a separate seven-material appearance/translation checklist. The JEI screen itself was not separately reported as checked.
 
 The accepted ordinary addon remains `0.2.0-dev` with the previously recorded artifact hash. This update changes acceptance records only; no source, recipes, resources, dependencies, worlds or live runtime settings were changed. No new Java test run was needed for this documentation update. Formal artwork and parent-pack installation/coexistence verification remain follow-up work. No public release or Issue #7 closure was performed.
+
+## Original item artwork revision (`0.2.1-dev`, 2026-10-01)
+
+At the user's request the controller created five original concept images with built-in `image_gen`, without third-party image inputs, then separately authored editable 16×16 pixel grids. Luna implemented the native-grid PNG writer and generated the production images; the controller reviewed the generator, all five silhouettes at enlarged/actual size, and the final JAR. Provenance, prompts and fixed-source license review are in [assets](assets.md).
+
+`python3 tools/generate_icons.py` regenerated all five production PNGs from `artwork/zinc-v1.json`. Independent controller regeneration into a temporary directory produced byte-identical files. The controller JAR inspection confirmed five new 16×16 RGBA textures matching source, all 21 recipe JSONs unchanged from the accepted `0.2.0-dev` JAR, all production class files byte-identical, metadata `0.2.1-dev`, and no fixture/test classes or nested JARs.
+
+Luna's `:common:test :neoforge:test :neoforge:build` completed successfully. The same controller command also completed `BUILD SUCCESSFUL`; 13 tasks were up-to-date and the common dependency boundary executed with `0 artifacts`. The unchanged-code JUnit reports have 6 common + 2 NeoForge tests, zero failures/errors. GameTests and server persistence were not repeated for this image/metadata-only revision; their recorded results describe the accepted `0.2.0-dev` build.
+
+The ordinary JAR is 49,681 bytes, SHA-512 `40d1bbd634d23173a77295db484f6a5b7fedba744723e30862b99d7f006e69b6de54ed2a2b15d2b5114e2e4870e6447d9c891f562d62a8386ddf993d2022c8e8`. A byte-identical copy is in the parent project's ignored `dist/cmz-trial/create-mekanism-zinc-0.2.1-dev.jar`. The prior `0.2.0-dev` JAR, live trial server and native Windows instance were not replaced. In-game texture rendering and user visual acceptance of zinc-v1 remain pending. No public release or main-pack installation was performed.
 
 ## Historical observations — addon 0.1.0-dev at commit `f5f3024`
 

@@ -12,7 +12,7 @@
 
 ## 試遊サーバー
 
-以下は親Minecraftリポジトリのルートで実行し、停止済みの専用ランタイムを起動します。既存ユーザーワールドをコピー・指定しないでください。
+このセッションでサーバーが起動済みの場合は、直接 `127.0.0.1:25566` へ接続します。以下の起動コマンドはサーバーが停止している場合だけ、親Minecraftリポジトリのルートで実行します。既存ユーザーワールドをコピー・指定しないでください。
 
 ```sh
 cd .local/mod-development/create-mekanism-zinc/.local/verification/full-processing-server/instance

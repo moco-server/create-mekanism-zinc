@@ -6,7 +6,7 @@ The ordinary artifact is `neoforge/build/libs/create-mekanism-zinc-0.2.0-dev.jar
 
 Nominal zinc-ore outputs are 2x Zinc Dust, 3x Clumps, 4x Shards, and 5x final Clumps/ingots. For raw zinc, the corresponding batches are three pieces for 2x Dust ×4, one piece for 3x Clumps ×2, three pieces for 4x Shards ×8, and three pieces for 5x final output ×10. A raw zinc block yields 12 Dust, 18 Clumps, 24 Shards, and 30 final output. The 5x slurry stage makes 1,000 / 2,000 / 6,000 mB dirty slurry for ore / raw batch / block, uses water at 5:1 slurry ratio, and crystallizes one Zinc Crystal per 200 mB clean slurry.
 
-The user reported successful processing through 4x on 2026-10-01. The 5x client acceptance remains pending; the Windows trial now includes pinned client-side JEI for recipe browsing. See [client acceptance](docs/client-acceptance.md) for the full 5x chain and viewer controls.
+The user reported successful client processing for all 2x–5x lines on 2026-10-01. Processing-line client acceptance is complete; a separate full material-display checklist remains unrecorded. The Windows trial includes pinned client-side JEI for recipe browsing. See [client acceptance](docs/client-acceptance.md) for the full 5x chain and viewer controls.
 
 ## Build and verify
 

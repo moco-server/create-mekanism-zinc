@@ -54,7 +54,7 @@ Item/chemical outputs use the addon namespace; oxygen, hydrogen_chloride and sul
 
 ### Task 1: 加工定義・データ生成・単体検証
 
-**Files:** common `ZincProcessing.java`, `ZincProcessingTest.java`; neoforge `ZincDataGenerators.java`, `ZincRecipeGenerationTest.java`; `neoforge/src/generated/resources`; `gradle.properties`; `.github/workflows/build.yml` artifact path; production JAR references in `scripts/verify-server.py`.
+**Files:** common `ZincProcessing.java`, `ZincProcessingTest.java`; neoforge `ZincDataGenerators.java`, `ZincRecipeGenerationTest.java`; `neoforge/src/generated/resources`; `gradle.properties`; root `build.gradle` version source only; fixture metadata dependency version in `neoforge/src/gametest/templates/META-INF/neoforge.mods.toml`; `.github/workflows/build.yml` artifact path; production JAR references in `scripts/verify-server.py`.
 
 **Interfaces:** Preserve `ZincProcessing.recipes()` as an immutable list; extend recipe Kind with PURIFYING, INJECTING, DISSOLUTION, WASHING, CRYSTALLIZING. Extend `ProcessingRecipe`'s existing fields with nullable `ChemicalInput(String id, long amount)`, nullable `FluidInput(String tag, int amount)` and boolean `perTickUsage`. `inputId`/`inputCount` mean primary input: item for item recipes, chemical for WASHING/CRYSTALLIZING; supplementary ChemicalInput is only for PURIFYING/INJECTING/DISSOLUTION. WASHING supplementary FluidInput is water. Chemical outputs are identified by Kind DISSOLUTION/WASHING. Use a convenience constructor for the existing 9-field recipes if needed. Do not create a general recipe framework.
 
@@ -67,13 +67,14 @@ Item/chemical outputs use the addon namespace; oxygen, hydrogen_chloride and sul
 
 ### Task 2: 実機による3〜5倍全工程テスト
 
-**Files:** `neoforge/src/gametest/java/.../tests/ZincAdvancedMachineGameTests.java` (new); existing `ZincMachineGameTests.java` only for shared regression behavior if necessary. No production code changes without controller finding/approval.
+**Files:** `neoforge/src/gametest/java/.../tests/ZincAdvancedMachineGameTests.java` (new); `neoforge/src/gametest/resources/data/create_mekanism_zinc/structure/processing_line.nbt` (new, bounds7×4×7); existing `ZincMachineGameTests.java` only for shared regression behavior if necessary. No production code changes without controller finding/approval.
 
 **Interfaces:** Use Task 1's generated recipes and installed fixed Mekanism machinery. `TileEntityAdvancedElectricMachine` exposes `chemicalTank`; dissolution/washer/crystallizer expose `getChemicalTanks(null)` and energy container; washer `getFluidTanks(null)`; actual machine inventory slots can be found by type. No reflection or fabricated recipe results. All test setup belongs to gametest source set.
 
 - [ ] Add actual-machine pipelines for each of 3/4/5x, each accepting normal ore, deepslate ore, raw batch and raw block (12 cases). Run every applicable stage through real block entities to `create:zinc_ingot`, asserting intermediate output kinds/counts, final exact yield, all consumed input, and chemical amounts at dissolution/washing/crystallization. Transfer machine outputs to next machine through fixture code if needed; do not reconstruct expected intermediates as inputs. Start with empty outputs.
 - [ ] Preserve all previous 13 GameTests. Test 4/5x raw1 and raw2 blocked; missing oxygen/HCl/acid, power (all new powered machine types), water and clean slurry199 blocked with retained inputs. Include wrong-chemical rejection and crushed-raw/ingot exclusion at all additive entrance recipe types.
 - [ ] Use legitimate Mekanism SPEED upgrades if needed to keep test duration practical, with default recipe settings and sufficient replenished energy/chemical/water; document actual upgrade counts. Do not set progress counters or directly invoke recipe process outputs. For per_tick chemical usage assert depletion during working and stalled behavior when empty; do not assert a constant 200 consumption because machine settings include usage scaling.
+- [ ] 最終精錬は実出力の粉を各1個に分け、最大30台の実溶鉱炉で並行処理してよい。燃料を供給し、実インゴットを集計する。既存size1×1×1のempty templateは変更せず、新しい境界内で配置し、他テストとの干渉を防ぐ。
 - [ ] Run `./gradlew :neoforge:runGameTestServer`, inspect complete report and return count/names/failures. Any production defect is escalated for controller judgment before a scoped correction.
 - [ ] Commit fixture-only changes, report commands/results, consumed resources and limits. Controller review precedes Task 3.
 

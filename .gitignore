@@ -10,3 +10,4 @@ repo/
 **/src/generated/resources/.cache/
 __pycache__/
 *.py[cod]
+.superpowers/

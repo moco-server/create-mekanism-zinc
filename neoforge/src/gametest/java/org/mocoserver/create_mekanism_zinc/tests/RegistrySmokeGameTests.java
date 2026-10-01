@@ -1,7 +1,8 @@
-package org.mocoserver.create_mekanism_zinc;
+package org.mocoserver.create_mekanism_zinc.tests;
 
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.mocoserver.create_mekanism_zinc.CreateMekanismZinc;
 import mekanism.api.MekanismAPI;
 import mekanism.api.chemical.Chemical;
 import net.minecraft.core.registries.BuiltInRegistries;

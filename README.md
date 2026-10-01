@@ -1,16 +1,24 @@
 # Create Mekanism Zinc
 
-A private, independently buildable addon for Minecraft 1.21.1, NeoForge 21.1.252, Create 6.0.10, and Mekanism 10.7.19.85. The addon is at an early development stage; its assets and content are not release-ready. No Minecraft GUI or authenticated client verification has been performed.
+Private MIT addon for Minecraft 1.21.1 and NeoForge 21.1.252, targeting Create 6.0.10 and Mekanism 10.7.19.85. The project registers five zinc processing intermediates and two Mekanism slurries, with six recipes: zinc ore and raw zinc enrichment, raw zinc block enrichment, ingot crushing, and dust smelting/blasting. It does not add extra crushed raw zinc input or 3x–5x recipes.
 
-## Build
+The textures and labels are provisional and are not release-ready. The production artifact is `neoforge/build/libs/create-mekanism-zinc-0.1.0-dev.jar`; it includes common classes and assets, with no test fixtures or dependency jars. Exact targets and loader dependency ranges are in [docs/compatibility.md](docs/compatibility.md).
 
-Use JDK 21. Gradle 9.2.1 is provided by the wrapper.
+## Build and verify
+
+Use Java 21 and Gradle 9.2.1 via the wrapper. Run data generation as its own Gradle invocation before the separate tests/build invocation:
 
 ```sh
 ./gradlew :neoforge:runData
 ./gradlew :common:test :neoforge:test :neoforge:build
+./gradlew :neoforge:runGameTestServer
+./gradlew :neoforge:gameTestJar
+python3 scripts/verify-server.py clean-boot
+python3 scripts/verify-server.py persistence
 ```
 
-Run datagen as a separate Gradle invocation before tests and packaging when recipe or tag definitions change. Generated resources are committed build inputs; a normal build uses them as checked in and does not run datagen. The `common` module contains loader-independent code and assets. `neoforge` contains game integration. The ordinary NeoForge jar includes common outputs and does not bundle Create, Mekanism, or other dependency jars.
+The scripts use an ignored disposable server under `.local/verification/`. See [docs/verification.md](docs/verification.md) for commands, runtime versions, and observed results.
 
-Development runs use ignored `.local/` working directories. Available tasks include `:neoforge:runClient`, `:neoforge:runServer`, `:neoforge:runData`, and `:neoforge:runGameTestServer`.
+## Client acceptance
+
+The authenticated GUI and visual check is part of milestone acceptance and is pending the user's confirmation. Use the Japanese [client acceptance checklist](docs/client-acceptance.md) for the artifact, setup, and expected results. Public distribution, parent-pack installation, and issue closure are outside this milestone.

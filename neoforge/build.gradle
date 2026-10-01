@@ -50,33 +50,39 @@ sourceSets.main.resources.srcDir(metadata)
 
 neoForge {
     version = neo_version
+    mods {
+        create(mod_id) {
+            sourceSet sourceSets.main
+            sourceSet project(':common').sourceSets.main
+        }
+        create('create_mekanism_zinc_tests') {
+            sourceSet sourceSets.gametest
+        }
+    }
     runs {
         client {
             client()
             gameDirectory = rootProject.file('.local/client')
+            loadedMods = [mods.getByName(mod_id)]
         }
         server {
             server()
             programArgument '--nogui'
             gameDirectory = rootProject.file('.local/server')
+            loadedMods = [mods.getByName(mod_id)]
         }
         data {
             data()
             gameDirectory = rootProject.file('.local/data')
             programArguments.addAll '--mod', mod_id, '--all', '--output', file('src/generated/resources/').absolutePath,
                     '--existing', file('src/main/resources/').absolutePath
+            loadedMods = [mods.getByName(mod_id)]
         }
         gameTestServer {
             type = 'gameTestServer'
             gameDirectory = rootProject.file('.local/gametest')
             systemProperty 'neoforge.enabledGameTestNamespaces', mod_id
-        }
-    }
-    mods {
-        "${mod_id}" {
-            sourceSet sourceSets.main
-            sourceSet sourceSets.gametest
-            sourceSet project(':common').sourceSets.main
+            loadedMods = [mods.getByName(mod_id), mods.getByName('create_mekanism_zinc_tests')]
         }
     }
 }
@@ -120,6 +126,23 @@ tasks.named('jar', Jar).configure {
         rename { 'LICENSE' }
     }
     duplicatesStrategy = DuplicatesStrategy.FAIL
+}
+
+def fixtureMetadata = tasks.register('generateGameTestModMetadata', ProcessResources) {
+    inputs.property('mod_version', mod_version)
+    filteringCharset = 'UTF-8'
+    expand(mod_version: mod_version)
+    from 'src/gametest/templates'
+    into layout.buildDirectory.dir('generated/sources/gameTestModMetadata')
+}
+
+sourceSets.gametest.resources.srcDir(fixtureMetadata)
+
+tasks.register('gameTestJar', Jar) {
+    archiveClassifier = 'gametests'
+    from sourceSets.gametest.output
+    duplicatesStrategy = DuplicatesStrategy.FAIL
+    dependsOn tasks.named('gametestClasses')
 }
 
 tasks.named('check').configure {

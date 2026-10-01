@@ -1,0 +1,31 @@
+modLoader="javafml"
+loaderVersion="[4,)"
+license="MIT"
+
+[[mods]]
+modId="create_mekanism_zinc_tests"
+version="${mod_version}"
+displayName="Create Mekanism Zinc Test Fixtures"
+authors="moco-server"
+description="Private runtime verification fixtures; not for distribution."
+
+[[dependencies.create_mekanism_zinc_tests]]
+modId="neoforge"
+type="required"
+versionRange="[21.1.252]"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.create_mekanism_zinc_tests]]
+modId="minecraft"
+type="required"
+versionRange="[1.21.1]"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.create_mekanism_zinc_tests]]
+modId="create_mekanism_zinc"
+type="required"
+versionRange="[0.1.0-dev]"
+ordering="AFTER"
+side="BOTH"

@@ -1,24 +1,26 @@
 # Create Mekanism Zinc
 
-Private MIT addon for Minecraft 1.21.1 and NeoForge 21.1.252, targeting Create 6.0.10 and Mekanism 10.7.19.85. The project registers five zinc processing intermediates and two Mekanism slurries, with six recipes: zinc ore and raw zinc enrichment, raw zinc block enrichment, ingot crushing, and dust smelting/blasting. It does not add extra crushed raw zinc input or 3x–5x recipes.
+Private MIT addon for Minecraft 1.21.1 and NeoForge 21.1.252, targeting Create 6.0.10 and Mekanism 10.7.19.85. Version `0.2.0-dev` registers five zinc processing intermediates, two Mekanism slurries, and 21 recipes covering 2x through 5x processing. The textures and labels are provisional; this is not a public release.
 
-The textures and labels are provisional and are not release-ready. The production artifact is `neoforge/build/libs/create-mekanism-zinc-0.1.0-dev.jar`; it includes common classes and assets, with no test fixtures or dependency jars. Exact targets and loader dependency ranges are in [docs/compatibility.md](docs/compatibility.md).
+The ordinary artifact is `neoforge/build/libs/create-mekanism-zinc-0.2.0-dev.jar`. It contains production classes and assets only. GameTest fixtures are built separately as `create-mekanism-zinc-0.2.0-dev-gametests.jar` and must not be installed in the client or ordinary server. Exact supported versions are in [docs/compatibility.md](docs/compatibility.md).
+
+Nominal zinc-ore outputs are 2x Zinc Dust, 3x Clumps, 4x Shards, and 5x final Clumps/ingots. For raw zinc, the corresponding batches are three pieces for 2x Dust ×4, one piece for 3x Clumps ×2, three pieces for 4x Shards ×8, and three pieces for 5x final output ×10. A raw zinc block yields 12 Dust, 18 Clumps, 24 Shards, and 30 final output. The 5x slurry stage makes 1,000 / 2,000 / 6,000 mB dirty slurry for ore / raw batch / block, uses water at 5:1 slurry ratio, and crystallizes one Zinc Crystal per 200 mB clean slurry.
 
 ## Build and verify
 
-Use Java 21 and Gradle 9.2.1 via the wrapper. Run data generation as its own Gradle invocation before the separate tests/build invocation:
+Use Java 21 and Gradle 9.2.1 via the wrapper. Keep data generation in its own invocation. Then run unit/build checks, actual GameTests, and the isolated runtime checks:
 
 ```sh
 ./gradlew :neoforge:runData
-./gradlew :common:test :neoforge:test :neoforge:build
+./gradlew :common:test :neoforge:test :neoforge:build :neoforge:gameTestJar
 ./gradlew :neoforge:runGameTestServer
-./gradlew :neoforge:gameTestJar
+python3 scripts/verify-server.py prepare
 python3 scripts/verify-server.py clean-boot
 python3 scripts/verify-server.py persistence
 ```
 
-The scripts use an ignored disposable server under `.local/verification/`. See [docs/verification.md](docs/verification.md) for commands, runtime versions, and observed results.
+The disposable server is under `.local/verification/full-processing-server/`, binds to `127.0.0.1:25566`, and uses a previously accepted EULA. See [docs/verification.md](docs/verification.md) for exact environment values and recorded results.
 
 ## Client acceptance
 
-The authenticated GUI and visual check is part of milestone acceptance and is pending the user's confirmation. Use the Japanese [client acceptance checklist](docs/client-acceptance.md) for the artifact, setup, and expected results. Public distribution, parent-pack installation, and issue closure are outside this milestone.
+User-facing GUI and processing confirmation for the 3x–5x lines remains pending. The user confirmed the previous 2x behavior. Follow the Japanese [client acceptance checklist](docs/client-acceptance.md); it recommends a new Prism profile and preserves the older trial profile. Public distribution, parent-pack installation, and issue closure are outside this milestone.

@@ -1,34 +1,33 @@
 # クライアント受け入れ確認
 
-この確認は、認証済みクライアントで実際にログインして行います。現在の状態は「一部ユーザー確認済み・クライアント検収待ち」です。
+3〜5倍ラインのGUI・加工結果はユーザー確認待ちです。ユーザーからは旧版の2倍加工について「一応2倍は動作してた」と報告済みです。今回の確認は Issue #7 の全体完了や公開配布を意味しません。
 
-## 対象と準備
+## 対象プロファイル
 
-- Minecraft 1.21.1、NeoForge 21.1.252、Java 21
-- Create 6.0.10、Mekanism 10.7.19.85（配布ファイル build 85）
-- クライアントに production jar `neoforge/build/libs/create-mekanism-zinc-0.1.0-dev.jar` を追加
-- 専用サーバーにも同じ production jar と上記依存MODを追加
-- GameTest用 `create-mekanism-zinc-0.1.0-dev-gametests.jar` はクライアント・配布サーバーに追加しない
+- 新規Prismインスタンス `moco-cmz-trial-0.2.0-dev-client` はコントローラーが作成し、Minecraft 1.21.1 / NeoForge 21.1.252 / LWJGL 3.3.3、通常3 JARのSHA-512、21レシピ、fixture非同梱を独立確認済みです。保存先は `C:\Users\wwwdd\AppData\Roaming\PrismLauncher\instances\moco-cmz-trial-0.2.0-dev-client` です。ワールド、既存設定、認証情報はコピーしていません。
+- Windows側でのGUI起動・実加工は未実施です。旧0.1.0-devインスタンスは保持し、固定依存JARを読み取りコピーしただけで、旧インスタンスのワールド／MOD構成は変更していません。
+- Minecraft 1.21.1、NeoForge 21.1.252、Java 21、Create 6.0.10、Mekanism 10.7.19.85 (Modrinth build 85)。対応範囲は[互換性表](compatibility.md)の固定対象のみです。
+- クライアントへ入れるaddonは `dist/cmz-trial/create-mekanism-zinc-0.2.0-dev.jar`（独立MOD内では `neoforge/build/libs/create-mekanism-zinc-0.2.0-dev.jar`）です。GameTest fixtureの `-gametests.jar` は入れません。
+- 試遊サーバーは専用の新規ワールドで、IPv4 `127.0.0.1:25566` に接続します。`localhost` ではなくIPv4を直接指定してください。Windowsで `localhost` がIPv6へ解決される場合の接続失敗を避けます。
 
-## 起動と停止
+## 試遊サーバー
 
-以下のパスは独立したMODリポジトリ (`.local/mod-development/create-mekanism-zinc`) を基準にしています。まず親のMinecraftプロジェクトからそこへ移動し、検証済み使い捨てワールドを起動します。このワールドは確認専用です。保存済みワールドをこの手順で使わないでください。
+以下は親Minecraftリポジトリのルートで実行し、停止済みの専用ランタイムを起動します。既存ユーザーワールドをコピー・指定しないでください。
 
 ```sh
-cd .local/mod-development/create-mekanism-zinc
-cd .local/verification/clean-server/instance
+cd .local/mod-development/create-mekanism-zinc/.local/verification/full-processing-server/instance
 export JAVA_HOME=/home/osamu/develop/moco-server/mc/.local/issue7-gradle/jdks/eclipse_adoptium-21-amd64-linux.2
 export PATH="$JAVA_HOME/bin:$PATH"
 ./run.sh nogui
 ```
 
-この隔離サーバーは `127.0.0.1:25565` のみにbindし、`online-mode=false` です。外部接続を受けず、サーバー側のアカウント認証を行いません。いつもの認証済みランチャーから `localhost:25565` へ接続し、クライアントの起動・MOD表示・GUIを確認してください。認証済み接続をサーバーが検証したとは扱いません。
+ワールド `cmz-full-processing` は保存確認用fixtureにより5アイテムとAdvanced Chemical Tank 2基を持ちます。ユーザー確認前に状態を変えずに見る場合は、コンソールで `op <プレイヤー名>` を実行し、クライアントで `/tp @s 1 81 2` を実行します。座標 (1,80,2) のチェストに5種類のアイテムが各1〜5個、(2,80,2)と(3,80,2)のAdvanced Chemical Tankに `dirty_zinc` 1111 mB、`clean_zinc` 2222 mBが保存されています。確認後はコンソールで `save-all flush`、次に `stop` を実行します。
 
-再起動確認済みワールドには、チェストに5種類のアイテムが各1〜5個、`2 80 2` と `3 80 2` のAdvanced Chemical Tankに両スラリーが各1111 mB／2222 mB入っています。コンソールで `op <プレイヤー名>` を実行し、ゲーム内で `/tp @s 1 81 2` と入力すると配置場所に移動できます。確認後、コンソールで `save-all flush`、続けて `stop` を実行します。
+この専用サーバーは `online-mode=false` です。サーバーはアカウント認証を行いません。認証済みPrismクライアントのログイン結果とGUIはユーザーが確認してください。サーバーの起動・接続確認を認証機能の検証とは扱いません。
 
-## 登録内容
+## 登録素材と表示
 
-クリエイティブの「素材」タブで次の5アイテムが表示され、各アイコンと日本語・英語名を確認します。
+クリエイティブの「素材」タブでアイコン、日本語名、英語名を確認します。
 
 | ID | 日本語名 | 英語名 |
 | --- | --- | --- |
@@ -38,33 +37,44 @@ export PATH="$JAVA_HOME/bin:$PATH"
 | `create_mekanism_zinc:shard_zinc` | 亜鉛の欠片 | Zinc Shard |
 | `create_mekanism_zinc:crystal_zinc` | 亜鉛の結晶 | Zinc Crystal |
 
-Mekanismのクリエイティブアイテム検索または化学タンク画面で `dirty_zinc` と `clean_zinc` が登録され、色が表示されることも確認します。色と画像は暫定です。
+Mekanismのクリエイティブアイテム検索またはタンク画面で `dirty_zinc` と `clean_zinc` の登録と色も確認します。現在の画像・色は暫定です。粉のアイコン品質は既に課題として報告されています。
 
-## レシピと処理
+## 2〜5倍レシピ
 
-JEI等のレシピ表示がある場合、以下を確認します。実機で確認する場合は、通常の電力・燃料を使い、入力と出力の個数を数えます。
+JEI等で21件のレシピ登録を確認し、実加工では通常の電力・化学物質・水を使って入出力数を記録してください。入力は各 `c:` タグを満たす実アイテムを使用します。対象タグに該当する入力が見つからない場合は、そのことを記録して代用品を推測しないでください。
 
-| 入力 | 装置 | 期待出力 |
+| 倍率・ライン | 加工の順序と入力 | 補助入力／期待出力 |
 | --- | --- | --- |
-| `c:ores/zinc` 1個 | Enrichment Chamber | Zinc Dust 2個 |
-| `c:raw_materials/zinc` 3個 | Enrichment Chamber | Zinc Dust 4個 |
-| `c:storage_blocks/raw_zinc` 1個 | Enrichment Chamber | Zinc Dust 12個 |
-| `c:ingots/zinc` 1個 | Crusher | Zinc Dust 1個 |
-| Zinc Dust 1個 | Furnace | Create Zinc Ingot 1個、200 ticks |
-| Zinc Dust 1個 | Blast Furnace | Create Zinc Ingot 1個、100 ticks |
+| 2倍 | Enrichment Chamber: `c:ores/zinc` 1個 | Zinc Dust 2個 |
+| 2倍 | Enrichment Chamber: `c:raw_materials/zinc` 3個 | Zinc Dust 4個 |
+| 2倍 | Enrichment Chamber: `c:storage_blocks/raw_zinc` 1個 | Zinc Dust 12個 |
+| 3倍 | Purification Chamber: zinc ore 1個 → Crusher: Zinc Clump 3個 → Enrichment Chamber: Dirty Zinc Dust → Zinc Dust | Purification Chamberに酸素1単位/tick。各後段レシピは1入力→1出力 |
+| 3倍 | Purification Chamber: raw zinc 1個 → 同じCrusher／Enrichment Chamber | 酸素1単位/tick。原石1個からZinc Dust 2個 |
+| 3倍 | Purification Chamber: raw zinc block 1個 → 同じ後段 | 酸素2単位/tick。ブロックからZinc Dust 18個 |
+| 4倍 | Chemical Injection Chamber: zinc ore 1個 → Purification Chamber: Zinc Shard 4個 → clumpへ変換し後段処理 | Injection Chamberにhydrogen chloride 1単位/tick。各ShardからClump 1個 |
+| 4倍 | Chemical Injection Chamber: raw zinc 3個 → 同じ後段 | hydrogen chloride 1単位/tick。Shard 8個 |
+| 4倍 | Chemical Injection Chamber: raw zinc block 1個 → 同じ後段 | hydrogen chloride 2単位/tick。Shard 24個 |
+| 5倍 | Chemical Dissolution Chamber: ore 1個、またはraw zinc 3個、またはraw zinc block 1個 | sulfuric acid は通常1／1／2単位/tick。dirty slurryは順に1000／2000／6000 mB |
+| 5倍 | Dirty Zinc slurryをWasherで洗浄し、Crystallizerでclean slurryを結晶化 | 水5 mBでslurry 1 mB洗浄。clean slurry 200 mBあたりZinc Crystal 1個。CrystalからShard 1個へ変換 |
 
-Enrichment ChamberにRaw Zincを1個、次に2個入れ、どちらも入力が消費されずDustが出ないことも確認します。入力は `c:ores/zinc`、`c:raw_materials/zinc` 等のタグを満たす実アイテムを使用してください。タグに該当する入力が見つからない場合は、その旨を記録します。
+補助化学物質なし、電力なし、水不足、結晶化に必要なclean slurry 200 mB未満の条件で入力が消費されないことも確認します。Enrichment Chamberでraw zinc 1個と2個をそれぞれ試し、入力が保持されて出力がないことを確認します。Crushed Raw Zincと精錬済みZinc Ingotは3〜5倍入口に使えないことを確認します。生産機械の進捗値を手で変更して結果を早めないでください。
 
-## ワールド保存
+レシピの `per_tick_usage=true` と補助Chemical amountの基準はpurification / injection / dissolutionで通常1単位/tick、raw zinc blockでは2単位/tickです。実際の消費量、加工速度、電力は対象版Mekanismの機械設定・統計倍率・導入upgradeに従うため、常に固定量とは限りません。水とslurryの比率、crystallizerの200 mBごとの出力はレシピ量として確認します。
 
-テストハーネスでは実際に専用サーバーJVMを2回起動し、この使い捨てワールドのチェスト／タンク内容を再読み込み後に照合済みです。GUIでも画面で確認したい場合は、上記の座標で5アイテムと両スラリーを確認してください。
+3〜5倍ラインの末端は次の共有手順です。CrystalはChemical Injection Chamberでhydrogen chlorideを使ってShardへ、ShardはPurification Chamberでoxygenを使ってClumpへ、CrusherでDirty Zinc Dustへ、Enrichment ChamberでZinc Dustへ加工し、FurnaceまたはBlast FurnaceでCreate Zinc Ingotにします。粉の精錬はFurnace 200 ticks／Blast Furnace 100 ticks、どちらも経験値0.35です。
+
+| ラインと入力 | 最終インゴット期待数 |
+| --- | ---: |
+| 3倍: zinc ore / deepslate zinc ore 1個 | 3 |
+| 3倍: raw zinc 1個 | 2 |
+| 3倍: raw zinc block 1個 | 18 |
+| 4倍: zinc ore / deepslate zinc ore 1個 | 4 |
+| 4倍: raw zinc 3個 | 8 |
+| 4倍: raw zinc block 1個 | 24 |
+| 5倍: zinc ore / deepslate zinc ore 1個 | 5 |
+| 5倍: raw zinc 3個 | 10 |
+| 5倍: raw zinc block 1個 | 30 |
 
 ## 結果記録
 
-確認日、構成、ログイン結果、アイテム表示、各レシピの実測個数、ワールド再起動後の内容を記録します。GUI確認と認証済みログインは自動検証の対象外です。
-
-### 2026-10-01：ユーザーによる試遊報告
-
-- Windows版Prismの専用試遊インスタンスを用意した後、ユーザーから「一応2倍は動作してた」と報告を受けた。2倍加工の動作確認として記録する。個別の入力種類・実測収量・全6レシピの確認範囲は未報告。
-- 粉のアイコンについて、ユーザーから見た目の品質に問題があるとの指摘を受けた。現在の5アイテムの画像は `assets.md` に記載した仮画像であり、正式画像の制作は未完了。
-- 7種類すべての表示、日英表示名、認証済みログインの確認を含むクライアント検収は引き続き保留する。
+日付、プロファイル名、構成、ログイン結果、素材名表示、各段階の実測入力／出力個数、補助入力の消費、再起動後の保存内容を記録してください。3〜5倍のユーザー確認、認証済みログイン、画像品質の改善はまだ完了していません。

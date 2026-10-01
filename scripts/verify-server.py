@@ -13,7 +13,9 @@ import urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-RUNTIME = ROOT / ".local" / "verification" / "clean-server"
+RUNTIME = ROOT / ".local" / "verification" / "full-processing-server"
+WORLD_NAME = "cmz-full-processing"
+SERVER_PORT = 25566
 INSTALLER_URL = "https://maven.neoforged.net/releases/net/neoforged/neoforge/21.1.252/neoforge-21.1.252-installer.jar"
 INSTALLER_SHA512 = "11addafebd1dbb583252230c7ff97bf80c8b5f6d980a6ae8ffd409ba302e8beaee87e51c35fd8daf8a589b1c9fce9845dd0406a7b7113185ad349748a3461de5"
 EULA_SOURCE = Path(os.environ.get("CMZ_EULA_FILE", ROOT / ".local" / "eula.txt"))
@@ -81,7 +83,7 @@ def prepare() -> None:
     shutil.copytree(install / "libraries", library_copy)
     (GAME_DIR / "run.sh").chmod(0o755)
     (GAME_DIR / "server.properties").write_text(
-        "server-ip=127.0.0.1\nserver-port=25565\nonline-mode=false\nlevel-name=cmz-verification\n"
+        f"server-ip=127.0.0.1\nserver-port={SERVER_PORT}\nonline-mode=false\nlevel-name={WORLD_NAME}\n"
         "level-type=minecraft:normal\ngamemode=creative\ndifficulty=peaceful\nspawn-protection=0\nview-distance=5\nsimulation-distance=5\n",
         encoding="utf-8",
     )
@@ -128,7 +130,7 @@ class Server:
                                         cwd=GAME_DIR, stdin=subprocess.PIPE,
                                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1,
                                         env=server_env)
-        print(f"SERVER_JVM_START pid={self.process.pid} fixture={self.include_fixture} world={GAME_DIR / 'cmz-verification'}", flush=True)
+        print(f"SERVER_JVM_START pid={self.process.pid} fixture={self.include_fixture} world={GAME_DIR / WORLD_NAME}", flush=True)
         def read_output() -> None:
             assert self.process and self.process.stdout
             log_dir = RUNTIME / "logs"

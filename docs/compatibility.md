@@ -1,5 +1,7 @@
 # Compatibility targets
 
+This table documents the narrow target for addon `0.2.0-dev` and its 21 zinc-processing recipes. It does not claim support for adjacent versions.
+
 The initial compatibility target is intentionally narrow:
 
 | Component | Target |

@@ -1,0 +1,7 @@
+{
+  "values": {
+    "create_mekanism_zinc:clean_zinc": {
+      "representation": "c:ores/zinc"
+    }
+  }
+}

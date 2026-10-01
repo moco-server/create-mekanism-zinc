@@ -13,6 +13,7 @@ java {
 }
 
 sourceSets {
+    main.resources.srcDir 'src/generated/resources'
     gametest {
         compileClasspath += sourceSets.main.output + sourceSets.main.compileClasspath
         runtimeClasspath += sourceSets.main.output + sourceSets.main.runtimeClasspath
@@ -99,6 +100,7 @@ dependencies {
     localRuntime "maven.modrinth:mekanism:${mekanism_version}"
     testImplementation platform('org.junit:junit-bom:5.11.4')
     testImplementation 'org.junit.jupiter:junit-jupiter'
+    testImplementation 'com.google.code.gson:gson:2.11.0'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
@@ -109,10 +111,16 @@ tasks.withType(JavaCompile).configureEach {
 
 test {
     useJUnitPlatform()
+    dependsOn tasks.named('runData')
 }
 
 tasks.named('jar', Jar).configure {
+    dependsOn tasks.named('runData')
     from project(':common').sourceSets.main.output
+    from(rootProject.file('LICENSE')) {
+        into 'META-INF'
+        rename { 'LICENSE' }
+    }
     duplicatesStrategy = DuplicatesStrategy.FAIL
 }
 

@@ -7,3 +7,4 @@ build/
 run/
 repo/
 .DS_Store
+**/src/generated/resources/.cache/

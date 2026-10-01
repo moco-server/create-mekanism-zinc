@@ -12,6 +12,7 @@ public final class CreateMekanismZinc {
     public CreateMekanismZinc(net.neoforged.bus.api.IEventBus modEventBus) {
         ZincRegistries.ITEMS.register(modEventBus);
         ZincRegistries.CHEMICALS.register(modEventBus);
+        modEventBus.addListener(ZincDataGenerators::gatherData);
         modEventBus.addListener(this::addCreativeTabItems);
     }
 

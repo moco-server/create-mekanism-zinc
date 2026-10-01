@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "create_mekanism_zinc:processing/zinc/ingot/from_dust_blasting"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    },
+    "has_zinc_dust": {
+      "conditions": {
+        "items": [
+          {
+            "items": "create_mekanism_zinc:dust_zinc"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_zinc_dust"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "create_mekanism_zinc:processing/zinc/ingot/from_dust_blasting"
+    ]
+  }
+}

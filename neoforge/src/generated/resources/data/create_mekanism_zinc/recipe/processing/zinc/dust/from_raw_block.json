@@ -1,0 +1,11 @@
+{
+  "type": "mekanism:enriching",
+  "input": {
+    "count": 1,
+    "tag": "c:storage_blocks/raw_zinc"
+  },
+  "output": {
+    "count": 12,
+    "id": "create_mekanism_zinc:dust_zinc"
+  }
+}

@@ -17,7 +17,10 @@ jobs:
           distribution: temurin
           java-version: '21'
       - uses: gradle/actions/setup-gradle@v4
-      - run: ./gradlew :common:test :neoforge:build
+      - run: ./gradlew :common:test
+      - run: ./gradlew :neoforge:runData
+      - run: ./gradlew :neoforge:test :neoforge:build
+      - run: git diff --exit-code -- neoforge/src/generated/resources
       - uses: actions/upload-artifact@v4
         with:
           name: create-mekanism-zinc-jar

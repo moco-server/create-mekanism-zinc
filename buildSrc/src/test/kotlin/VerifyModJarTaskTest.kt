@@ -45,6 +45,8 @@ class VerifyModJarTaskTest {
             "net/minecraft/Item.class",
             "kotlin/Unit.class",
             "thirdparty/External.class",
+            "META-INF/jarjar/dependency.jar",
+            "data/example/.cache/generation",
         ).forEach { forbidden ->
             assertThrows(IllegalStateException::class.java) {
                 verifyModJar(jar(required + forbidden), required, "example", "example")

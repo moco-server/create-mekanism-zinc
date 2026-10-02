@@ -13,6 +13,7 @@ repositories {
 val localRuntime = configurations.create("localRuntime")
 dependencies {
     implementation(project(":core"))
+    implementation(libs.kff)
     compileOnly("maven.modrinth:create:${property("create_version")}")
     compileOnly("maven.modrinth:mekanism:${property("mekanism_version")}")
     add("localRuntime", "maven.modrinth:create:${property("create_version")}")
@@ -147,3 +148,60 @@ tasks.withType<JavaCompile>().configureEach {
     options.release.set(21)
 }
 tasks.test { useJUnitPlatform() }
+
+val verifyModJar =
+    tasks.register<VerifyModJarTask>("verifyModJar") {
+        modJar.set(tasks.jar.flatMap { it.archiveFile })
+        modId.set(zincModId)
+        val path = providers.gradleProperty("mod_package").get().replace('.', '/')
+        packagePath.set(path)
+        val items = listOf("dust_zinc", "dirty_dust_zinc", "clump_zinc", "shard_zinc", "crystal_zinc")
+        val categories = listOf("dusts", "dirty_dusts", "clumps", "shards", "crystals")
+        val recipes =
+            listOf(
+                "clump/from_ore",
+                "clump/from_raw_block",
+                "clump/from_raw_ore",
+                "clump/from_shard",
+                "crystal/from_slurry",
+                "dirty_dust/from_clump",
+                "dust/from_dirty_dust",
+                "dust/from_ingot",
+                "dust/from_ore",
+                "dust/from_raw_block",
+                "dust/from_raw_ore",
+                "ingot/from_dust_blasting",
+                "ingot/from_dust_smelting",
+                "shard/from_crystal",
+                "shard/from_ore",
+                "shard/from_raw_block",
+                "shard/from_raw_ore",
+                "slurry/clean",
+                "slurry/dirty/from_ore",
+                "slurry/dirty/from_raw_block",
+                "slurry/dirty/from_raw_ore",
+            )
+        requiredEntries.set(
+            listOf(
+                "$path/content/ZincContent.class",
+                "$path/processing/ZincProcessing.class",
+                "$path/CreateMekanismZinc.class",
+                "$path/ZincRegistries.class",
+                "$path/ZincDataGenerators.class",
+                "META-INF/neoforge.mods.toml",
+                "META-INF/LICENSE",
+                "assets/$zincModId/lang/en_us.json",
+                "assets/$zincModId/lang/ja_jp.json",
+                "data/mekanism/data_maps/mekanism/chemical/chemical_solid_tag.json",
+            ) +
+                items.flatMap {
+                    listOf(
+                        "assets/$zincModId/textures/item/$it.png",
+                        "assets/$zincModId/models/item/$it.json",
+                    )
+                } +
+                categories.flatMap { listOf("data/c/tags/item/$it.json", "data/c/tags/item/$it/zinc.json") } +
+                recipes.map { "data/$zincModId/recipe/processing/zinc/$it.json" },
+        )
+    }
+tasks.named("build") { dependsOn(verifyModJar) }

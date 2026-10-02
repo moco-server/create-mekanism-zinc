@@ -53,6 +53,9 @@ internal fun verifyModJar(
                         (!it.startsWith("$packagePath/") || it.contains("GameTests") || it.contains("/tests/"))
                 ) ||
                     it.startsWith(".cache/") ||
+                    it.contains("/.cache/") ||
+                    it.endsWith(".jar") ||
+                    it.startsWith("META-INF/jarjar/") ||
                     it.startsWith("docs/") ||
                     it.startsWith(".agents/") ||
                     it.startsWith("scripts/") ||

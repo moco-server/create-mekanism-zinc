@@ -1,0 +1,417 @@
+{
+  "data/c/tags/item/clumps/zinc.json": {
+    "values": [
+      "create_mekanism_zinc:clump_zinc"
+    ]
+  },
+  "data/c/tags/item/clumps.json": {
+    "values": [
+      "#c:clumps/zinc"
+    ]
+  },
+  "data/c/tags/item/crystals/zinc.json": {
+    "values": [
+      "create_mekanism_zinc:crystal_zinc"
+    ]
+  },
+  "data/c/tags/item/crystals.json": {
+    "values": [
+      "#c:crystals/zinc"
+    ]
+  },
+  "data/c/tags/item/dirty_dusts/zinc.json": {
+    "values": [
+      "create_mekanism_zinc:dirty_dust_zinc"
+    ]
+  },
+  "data/c/tags/item/dirty_dusts.json": {
+    "values": [
+      "#c:dirty_dusts/zinc"
+    ]
+  },
+  "data/c/tags/item/dusts/zinc.json": {
+    "values": [
+      "create_mekanism_zinc:dust_zinc"
+    ]
+  },
+  "data/c/tags/item/dusts.json": {
+    "values": [
+      "#c:dusts/zinc"
+    ]
+  },
+  "data/c/tags/item/shards/zinc.json": {
+    "values": [
+      "create_mekanism_zinc:shard_zinc"
+    ]
+  },
+  "data/c/tags/item/shards.json": {
+    "values": [
+      "#c:shards/zinc"
+    ]
+  },
+  "data/create_mekanism_zinc/advancement/recipes/misc/processing/zinc/ingot/from_dust_blasting.json": {
+    "parent": "minecraft:recipes/root",
+    "criteria": {
+      "has_the_recipe": {
+        "conditions": {
+          "recipe": "create_mekanism_zinc:processing/zinc/ingot/from_dust_blasting"
+        },
+        "trigger": "minecraft:recipe_unlocked"
+      },
+      "has_zinc_dust": {
+        "conditions": {
+          "items": [
+            {
+              "items": "create_mekanism_zinc:dust_zinc"
+            }
+          ]
+        },
+        "trigger": "minecraft:inventory_changed"
+      }
+    },
+    "requirements": [
+      [
+        "has_the_recipe",
+        "has_zinc_dust"
+      ]
+    ],
+    "rewards": {
+      "recipes": [
+        "create_mekanism_zinc:processing/zinc/ingot/from_dust_blasting"
+      ]
+    }
+  },
+  "data/create_mekanism_zinc/advancement/recipes/misc/processing/zinc/ingot/from_dust_smelting.json": {
+    "parent": "minecraft:recipes/root",
+    "criteria": {
+      "has_the_recipe": {
+        "conditions": {
+          "recipe": "create_mekanism_zinc:processing/zinc/ingot/from_dust_smelting"
+        },
+        "trigger": "minecraft:recipe_unlocked"
+      },
+      "has_zinc_dust": {
+        "conditions": {
+          "items": [
+            {
+              "items": "create_mekanism_zinc:dust_zinc"
+            }
+          ]
+        },
+        "trigger": "minecraft:inventory_changed"
+      }
+    },
+    "requirements": [
+      [
+        "has_the_recipe",
+        "has_zinc_dust"
+      ]
+    ],
+    "rewards": {
+      "recipes": [
+        "create_mekanism_zinc:processing/zinc/ingot/from_dust_smelting"
+      ]
+    }
+  },
+  "data/create_mekanism_zinc/recipe/processing/zinc/clump/from_ore.json": {
+    "type": "mekanism:purifying",
+    "chemical_input": {
+      "amount": 1,
+      "chemical": "mekanism:oxygen"
+    },
+    "item_input": {
+      "count": 1,
+      "tag": "c:ores/zinc"
+    },
+    "output": {
+      "count": 3,
+      "id": "create_mekanism_zinc:clump_zinc"
+    },
+    "per_tick_usage": true
+  },
+  "data/create_mekanism_zinc/recipe/processing/zinc/clump/from_raw_block.json": {
+    "type": "mekanism:purifying",
+    "chemical_input": {
+      "amount": 2,
+      "chemical": "mekanism:oxygen"
+    },
+    "item_input": {
+      "count": 1,
+      "tag": "c:storage_blocks/raw_zinc"
+    },
+    "output": {
+      "count": 18,
+      "id": "create_mekanism_zinc:clump_zinc"
+    },
+    "per_tick_usage": true
+  },
+  "data/create_mekanism_zinc/recipe/processing/zinc/clump/from_raw_ore.json": {
+    "type": "mekanism:purifying",
+    "chemical_input": {
+      "amount": 1,
+      "chemical": "mekanism:oxygen"
+    },
+    "item_input": {
+      "count": 1,
+      "tag": "c:raw_materials/zinc"
+    },
+    "output": {
+      "count": 2,
+      "id": "create_mekanism_zinc:clump_zinc"
+    },
+    "per_tick_usage": true
+  },
+  "data/create_mekanism_zinc/recipe/processing/zinc/clump/from_shard.json": {
+    "type": "mekanism:purifying",
+    "chemical_input": {
+      "amount": 1,
+      "chemical": "mekanism:oxygen"
+    },
+    "item_input": {
+      "count": 1,
+      "tag": "c:shards/zinc"
+    },
+    "output": {
+      "count": 1,
+      "id": "create_mekanism_zinc:clump_zinc"
+    },
+    "per_tick_usage": true
+  },
+  "data/create_mekanism_zinc/recipe/processing/zinc/crystal/from_slurry.json": {
+    "type": "mekanism:crystallizing",
+    "input": {
+      "amount": 200,
+      "chemical": "create_mekanism_zinc:clean_zinc"
+    },
+    "output": {
+      "count": 1,
+      "id": "create_mekanism_zinc:crystal_zinc"
+    }
+  },
+  "data/create_mekanism_zinc/recipe/processing/zinc/dirty_dust/from_clump.json": {
+    "type": "mekanism:crushing",
+    "input": {
+      "count": 1,
+      "tag": "c:clumps/zinc"
+    },
+    "output": {
+      "count": 1,
+      "id": "create_mekanism_zinc:dirty_dust_zinc"
+    }
+  },
+  "data/create_mekanism_zinc/recipe/processing/zinc/dust/from_dirty_dust.json": {
+    "type": "mekanism:enriching",
+    "input": {
+      "count": 1,
+      "tag": "c:dirty_dusts/zinc"
+    },
+    "output": {
+      "count": 1,
+      "id": "create_mekanism_zinc:dust_zinc"
+    }
+  },
+  "data/create_mekanism_zinc/recipe/processing/zinc/dust/from_ingot.json": {
+    "type": "mekanism:crushing",
+    "input": {
+      "count": 1,
+      "tag": "c:ingots/zinc"
+    },
+    "output": {
+      "count": 1,
+      "id": "create_mekanism_zinc:dust_zinc"
+    }
+  },
+  "data/create_mekanism_zinc/recipe/processing/zinc/dust/from_ore.json": {
+    "type": "mekanism:enriching",
+    "input": {
+      "count": 1,
+      "tag": "c:ores/zinc"
+    },
+    "output": {
+      "count": 2,
+      "id": "create_mekanism_zinc:dust_zinc"
+    }
+  },
+  "data/create_mekanism_zinc/recipe/processing/zinc/dust/from_raw_block.json": {
+    "type": "mekanism:enriching",
+    "input": {
+      "count": 1,
+      "tag": "c:storage_blocks/raw_zinc"
+    },
+    "output": {
+      "count": 12,
+      "id": "create_mekanism_zinc:dust_zinc"
+    }
+  },
+  "data/create_mekanism_zinc/recipe/processing/zinc/dust/from_raw_ore.json": {
+    "type": "mekanism:enriching",
+    "input": {
+      "count": 3,
+      "tag": "c:raw_materials/zinc"
+    },
+    "output": {
+      "count": 4,
+      "id": "create_mekanism_zinc:dust_zinc"
+    }
+  },
+  "data/create_mekanism_zinc/recipe/processing/zinc/ingot/from_dust_blasting.json": {
+    "type": "minecraft:blasting",
+    "category": "misc",
+    "cookingtime": 100,
+    "experience": 0.35,
+    "ingredient": {
+      "item": "create_mekanism_zinc:dust_zinc"
+    },
+    "result": {
+      "count": 1,
+      "id": "create:zinc_ingot"
+    }
+  },
+  "data/create_mekanism_zinc/recipe/processing/zinc/ingot/from_dust_smelting.json": {
+    "type": "minecraft:smelting",
+    "category": "misc",
+    "cookingtime": 200,
+    "experience": 0.35,
+    "ingredient": {
+      "item": "create_mekanism_zinc:dust_zinc"
+    },
+    "result": {
+      "count": 1,
+      "id": "create:zinc_ingot"
+    }
+  },
+  "data/create_mekanism_zinc/recipe/processing/zinc/shard/from_crystal.json": {
+    "type": "mekanism:injecting",
+    "chemical_input": {
+      "amount": 1,
+      "chemical": "mekanism:hydrogen_chloride"
+    },
+    "item_input": {
+      "count": 1,
+      "tag": "c:crystals/zinc"
+    },
+    "output": {
+      "count": 1,
+      "id": "create_mekanism_zinc:shard_zinc"
+    },
+    "per_tick_usage": true
+  },
+  "data/create_mekanism_zinc/recipe/processing/zinc/shard/from_ore.json": {
+    "type": "mekanism:injecting",
+    "chemical_input": {
+      "amount": 1,
+      "chemical": "mekanism:hydrogen_chloride"
+    },
+    "item_input": {
+      "count": 1,
+      "tag": "c:ores/zinc"
+    },
+    "output": {
+      "count": 4,
+      "id": "create_mekanism_zinc:shard_zinc"
+    },
+    "per_tick_usage": true
+  },
+  "data/create_mekanism_zinc/recipe/processing/zinc/shard/from_raw_block.json": {
+    "type": "mekanism:injecting",
+    "chemical_input": {
+      "amount": 2,
+      "chemical": "mekanism:hydrogen_chloride"
+    },
+    "item_input": {
+      "count": 1,
+      "tag": "c:storage_blocks/raw_zinc"
+    },
+    "output": {
+      "count": 24,
+      "id": "create_mekanism_zinc:shard_zinc"
+    },
+    "per_tick_usage": true
+  },
+  "data/create_mekanism_zinc/recipe/processing/zinc/shard/from_raw_ore.json": {
+    "type": "mekanism:injecting",
+    "chemical_input": {
+      "amount": 1,
+      "chemical": "mekanism:hydrogen_chloride"
+    },
+    "item_input": {
+      "count": 3,
+      "tag": "c:raw_materials/zinc"
+    },
+    "output": {
+      "count": 8,
+      "id": "create_mekanism_zinc:shard_zinc"
+    },
+    "per_tick_usage": true
+  },
+  "data/create_mekanism_zinc/recipe/processing/zinc/slurry/clean.json": {
+    "type": "mekanism:washing",
+    "chemical_input": {
+      "amount": 1,
+      "chemical": "create_mekanism_zinc:dirty_zinc"
+    },
+    "fluid_input": {
+      "amount": 5,
+      "tag": "minecraft:water"
+    },
+    "output": {
+      "amount": 1,
+      "id": "create_mekanism_zinc:clean_zinc"
+    }
+  },
+  "data/create_mekanism_zinc/recipe/processing/zinc/slurry/dirty/from_ore.json": {
+    "type": "mekanism:dissolution",
+    "chemical_input": {
+      "amount": 1,
+      "chemical": "mekanism:sulfuric_acid"
+    },
+    "item_input": {
+      "count": 1,
+      "tag": "c:ores/zinc"
+    },
+    "output": {
+      "amount": 1000,
+      "id": "create_mekanism_zinc:dirty_zinc"
+    },
+    "per_tick_usage": true
+  },
+  "data/create_mekanism_zinc/recipe/processing/zinc/slurry/dirty/from_raw_block.json": {
+    "type": "mekanism:dissolution",
+    "chemical_input": {
+      "amount": 2,
+      "chemical": "mekanism:sulfuric_acid"
+    },
+    "item_input": {
+      "count": 1,
+      "tag": "c:storage_blocks/raw_zinc"
+    },
+    "output": {
+      "amount": 6000,
+      "id": "create_mekanism_zinc:dirty_zinc"
+    },
+    "per_tick_usage": true
+  },
+  "data/create_mekanism_zinc/recipe/processing/zinc/slurry/dirty/from_raw_ore.json": {
+    "type": "mekanism:dissolution",
+    "chemical_input": {
+      "amount": 1,
+      "chemical": "mekanism:sulfuric_acid"
+    },
+    "item_input": {
+      "count": 3,
+      "tag": "c:raw_materials/zinc"
+    },
+    "output": {
+      "amount": 2000,
+      "id": "create_mekanism_zinc:dirty_zinc"
+    },
+    "per_tick_usage": true
+  },
+  "data/mekanism/data_maps/mekanism/chemical/chemical_solid_tag.json": {
+    "values": {
+      "create_mekanism_zinc:clean_zinc": {
+        "representation": "c:ores/zinc"
+      }
+    }
+  }
+}

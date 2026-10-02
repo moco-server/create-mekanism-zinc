@@ -300,23 +300,13 @@ public object ZincProcessing {
     public data class ChemicalInput(
         public val id: String,
         public val amount: Long,
-    ) {
-        public fun id(): String = id
-
-        public fun amount(): Long = amount
-    }
+    )
 
     public data class FluidInput(
         public val tag: String,
         public val amount: Int,
-    ) {
-        public fun tag(): String = tag
+    )
 
-        public fun amount(): Int = amount
-    }
-
-    // Javaアダプタの移植中だけrecord accessorを保持する。Task 3で削除する。
-    @Suppress("TooManyFunctions")
     public data class ProcessingRecipe(
         public val path: String,
         public val kind: Kind,
@@ -330,29 +320,5 @@ public object ZincProcessing {
         public val chemicalInput: ChemicalInput? = null,
         public val fluidInput: FluidInput? = null,
         public val perTickUsage: Boolean = false,
-    ) {
-        public fun path(): String = path
-
-        public fun kind(): Kind = kind
-
-        public fun inputId(): String = inputId
-
-        public fun inputTag(): Boolean = inputTag
-
-        public fun inputCount(): Int = inputCount
-
-        public fun outputId(): String = outputId
-
-        public fun outputCount(): Int = outputCount
-
-        public fun cookingTicks(): Int = cookingTicks
-
-        public fun experience(): Float = experience
-
-        public fun chemicalInput(): ChemicalInput? = chemicalInput
-
-        public fun fluidInput(): FluidInput? = fluidInput
-
-        public fun perTickUsage(): Boolean = perTickUsage
-    }
+    )
 }

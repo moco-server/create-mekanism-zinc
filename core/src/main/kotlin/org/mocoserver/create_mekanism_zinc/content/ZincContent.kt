@@ -37,21 +37,11 @@ public object ZincContent {
     public data class ItemDefinition(
         public val id: String,
         public val tag: String,
-    ) {
-        public fun id(): String = id
-
-        public fun tag(): String = tag
-    }
+    )
 
     public data class ChemicalDefinition(
         public val id: String,
         public val kind: SlurryKind,
         public val tint: Int,
-    ) {
-        public fun id(): String = id
-
-        public fun kind(): SlurryKind = kind
-
-        public fun tint(): Int = tint
-    }
+    )
 }

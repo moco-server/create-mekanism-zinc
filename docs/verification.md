@@ -18,6 +18,14 @@ Minecraft 1.21.1／NeoForge 21.1.252／Create 6.0.10／Mekanism 10.7.19.85は維
 
 ローカルログは`.local/logs/{baseline-build,baseline-gametest,core-check,adapter-check,kotlin-datagen,kotlin-gametest,clean-boot,persistence,migration}.log`。この時点の通常JAR SHA512: `1446073655907570ce7fffe52f64563d74098d04e5f6e47a2f296323f2289596c056ededf28cb34f7fd0d4510753c4381a9b8fe2405c6e549370aa4f0b148e2d`。最終成果物とCI相当の結果は後続の節で記録する。
 
+### 最終構成の検証
+
+テンプレートのCI補助・ローカルskills・issue／PR templateを採用し、Linux／Windows workflowを設定した。Linux相当のコマンドをローカルで実行し、Nodeテスト21件、Pythonテスト10件、root check、通常JAR build／verify、fixture JAR buildが成功した。再実行したdatagenと画像生成でも全46 baseline hash一致、追跡・未追跡差分0。最終ソースで実行したGameTestも33 required成功。
+
+JEI 19.51.0.418はModDevGradle 2.0.148の`RunModel.getAdditionalRuntimeClasspathConfiguration()`へclientだけ追加した。固定plugin JARの署名を`javap`で確認し、生成したclient classpathにJEIが存在、server／data／GameTest classpathに不存在を確認した。API参照: [対象版RunModel](https://github.com/neoforged/ModDevGradle/blob/2.0.148/src/main/java/net/neoforged/moddevgradle/dsl/RunModel.java)。GUIは起動していない。
+
+JARはtimestampを除去しentry順序を固定した。最終通常JAR SHA512: `a1e94fd8dcccbd892643a0ac4305c7509b38d6ff2f8bd99d017466f06e1fb9ee0c7ec259af743665f72b16af2fb1540d831bd79a9d53e6d7df03d9ad39b59354`。通常JAR収集scriptはclassifierを除外し、0／複数候補、symlink、空でない出力先を拒否する。Linux／Windows CIはGitHub上では未実行。公開配布、親packと既存試遊profileへの導入は未実施。
+
 ### 現行の再現手順
 
 Java 21へ`JAVA_HOME`を指定し、`GRADLE_USER_HOME`は必要ならrepo内へ置く。`CMZ_EULA_FILE`には既存の受諾済みファイルを指定する。

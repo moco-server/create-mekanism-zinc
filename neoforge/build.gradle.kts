@@ -93,6 +93,10 @@ neoForge {
     runs {
         create("client") {
             client()
+            // JEIは試遊専用。専用サーバー・datagen・GameTestへ持ち込まない。
+            additionalRuntimeClasspathConfiguration.dependencies.add(
+                project.dependencies.create("maven.modrinth:jei:ufHUqt9b"),
+            )
             gameDirectory.set(rootProject.file(".local/client"))
         }
         create("server") {

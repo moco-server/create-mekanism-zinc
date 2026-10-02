@@ -1,28 +1,31 @@
 # Create Mekanism Zinc
 
-Private MIT addon for Minecraft 1.21.1 and NeoForge 21.1.252, targeting Create 6.0.10 and Mekanism 10.7.19.85. Version `0.2.3-dev` registers five zinc processing intermediates, two Mekanism slurries, and 21 recipes covering 2x through 5x processing. As requested by the user, the five item icons are crops from the original zinc-v2 2172×724 RGBA artwork canvas, placed without resizing or recoloring onto transparent 512×512 canvases. The user accepted their in-game appearance as practical on 2026-10-02. This is not a public release.
+Minecraft 1.21.1 / NeoForge 21.1.252向けの亜鉛加工連携MODです。Create 6.0.10とMekanism 10.7.19.85を対象に、5つの中間素材、2種類のスラリー、2〜5倍加工の21レシピを追加します。MITライセンス。現在版は`0.3.0-dev`です。
 
-The ordinary artifact is `neoforge/build/libs/create-mekanism-zinc-0.2.3-dev.jar`. It contains production classes and assets only. GameTest fixtures are built separately as `create-mekanism-zinc-0.2.3-dev-gametests.jar` and must not be installed in the client or ordinary server. Exact supported versions are in [docs/compatibility.md](docs/compatibility.md).
+[minecraft-mod-template](https://github.com/moco-server/minecraft-mod-template) 0.1.0を基盤に、既存MODをKotlinへ移行しました。[採用履歴](docs/template-updates.md)に固定commitと差分を記録しています。
 
-Nominal zinc-ore outputs are 2x Zinc Dust, 3x Clumps, 4x Shards, and 5x final Clumps/ingots. For raw zinc, the corresponding batches are three pieces for 2x Dust ×4, one piece for 3x Clumps ×2, three pieces for 4x Shards ×8, and three pieces for 5x final output ×10. A raw zinc block yields 12 Dust, 18 Clumps, 24 Shards, and 30 final output. The 5x slurry stage makes 1,000 / 2,000 / 6,000 mB dirty slurry for ore / raw batch / block, uses water at 5:1 slurry ratio, and crystallizes one Zinc Crystal per 200 mB clean slurry.
+- `core`: ゲームAPIに依存しないKotlinの素材・レシピ定義と共通resource。
+- `neoforge`: 登録・datagen・ゲームAPIとの接続。本番コードとGameTestを分離。
+- `buildSrc`: coreの依存境界と配布JARの検査。
+- `.agents/skills`: このリポジトリ用のMOD開発手順。[AGENTS.md](AGENTS.md)から参照。
 
-The user confirmed successful client processing for all 2x–5x lines in `0.2.0-dev` on 2026-10-01. The `0.2.1-dev` through `0.2.3-dev` revisions change item artwork, two Japanese display names and metadata only; production classes and all 21 recipe JSONs match that accepted build byte-for-byte. See [artwork provenance and license review](docs/assets.md). Processing-line client acceptance is complete; the user also accepted the cropped icons in `0.2.3-dev` on 2026-10-02. The Windows trial includes pinned client-side JEI for recipe browsing. See [client acceptance](docs/client-acceptance.md) for the full 5x chain and viewer controls.
+配布時はCreate、Mekanismに加えて **Kotlin for Forge 5.5.0** が必要です。通常JARは`neoforge/build/libs/create-mekanism-zinc-0.3.0-dev.jar`。`-gametests.jar`は検証専用です。固定版・取得元は[対応構成](docs/compatibility.md)を参照してください。
 
-## Build and verify
+## 開発・検証
 
-Use Java 21 and Gradle 9.2.1 via the wrapper. Keep data generation in its own invocation. Then run unit/build checks, actual GameTests, and the isolated runtime checks:
+Java 21を用意し、Gradle 8.12.1はwrapperから実行します。通常ビルドにNodeや外部skillsの導入は不要です。
 
 ```sh
+./gradlew check :neoforge:build :neoforge:verifyModJar :neoforge:gameTestJar
 ./gradlew :neoforge:runData
-./gradlew :common:test :neoforge:test :neoforge:build :neoforge:gameTestJar
 ./gradlew :neoforge:runGameTestServer
-python3 scripts/verify-server.py prepare
-python3 scripts/verify-server.py clean-boot
-python3 scripts/verify-server.py persistence
+./gradlew :neoforge:runClient
 ```
 
-The disposable server is under `.local/verification/full-processing-server/`, binds to `127.0.0.1:25566`, and uses a previously accepted EULA. See [docs/verification.md](docs/verification.md) for exact environment values and recorded results.
+`runClient`には固定版のJEIを開発限定で追加します。サーバー、datagen、GameTestには追加しません。生成resourceの変更は追跡・未追跡の双方を確認してください。
 
-## Client acceptance
+CI補助のテストはNode 24で`node --test scripts/test/*.test.mjs`、サーバー検証scriptのテストは`python3 -m unittest discover -s scripts/test -p 'test_*.py'`です。外部skillsは[任意の導入手順](docs/external-skills.md)を使います。
 
-The user confirmed actual 2x–5x processing in the client on 2026-10-01. The user accepted the 0.2.3-dev item icons in-game on 2026-10-02, reporting that they were sufficiently practical. Follow the Japanese [client acceptance checklist](docs/client-acceptance.md); it recommends a new Prism profile and preserves the older trial profile. Public distribution, parent-pack installation, and issue closure are outside this milestone.
+配布JARの起動、2 JVM間の保存、旧Java版ワールドの移行を確認する手順と結果は[検証記録](docs/verification.md)、現在の設計は[docs/design.md](docs/design.md)を参照してください。
+
+既存の加工と画像のクライアント検収は[履歴](docs/client-acceptance.md)に保存しています。Kotlin版のGUI試遊、WindowsとGitHub上のCIは未実施です。公開配布や親packへの導入はこの移行に含めません。

@@ -9,6 +9,10 @@ allprojects {
     group = providers.gradleProperty("mod_group_id").get()
     version = providers.gradleProperty("mod_version").get()
     repositories { mavenCentral() }
+    tasks.withType<AbstractArchiveTask>().configureEach {
+        isPreserveFileTimestamps = false
+        isReproducibleFileOrder = true
+    }
 }
 tasks.named("check") { dependsOn(":core:check", ":neoforge:check") }
 

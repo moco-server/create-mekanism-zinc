@@ -1,4 +1,42 @@
-# Verification record
+# 検証記録
+
+## Kotlinテンプレート移行（0.3.0-dev、2026-10-02）
+
+Minecraft 1.21.1／NeoForge 21.1.252／Create 6.0.10／Mekanism 10.7.19.85は維持した。Gradle 8.12.1、Kotlin 2.0.21、KFF 5.5.0を採用した。Java 21の検証済みJDKを読み取りで利用し、Gradleキャッシュは今回のworktreeの`.local/gradle`へ複製した。ローカル検証では`JAVA_TOOL_OPTIONS=-XX:ActiveProcessorCount=2`、通常サーバーでは追加で`-Xmx2G`を指定した。
+
+- 旧Javaソース`243ec7f`から別ディレクトリでビルドし、単体8件とrequired GameTest 33件が成功した。本番／fixture JARと46 resourceのSHA256 manifestを`.local/template-migration/baseline`へ保持した。
+- Kotlin版のroot `check`が成功した。core単体7件、NeoForge単体2件、buildSrc単体8件、ktlint、型解決付きdetekt（main／test／gametest）、core境界を含む。境界検査は一時的な`mekanism/probe/BoundaryProbe.class`を実際に拒否し、probe削除後に成功した。
+- 本番Kotlin datagenが成功し、全46 resource（21レシピ、関連タグ／data map／advancement、画像／モデル／翻訳）が移行前とSHA256一致した。追跡・未追跡の生成resource差分は0。
+- Kotlin版も`All 33 required tests passed`。旧Java版とテスト名・template・timeoutが一致する。実機の2x〜5x、電力不足、補助素材不足・枯渇、無効入力、199 mBでの無出力などの契約を維持した。
+- 通常JARの必須class／resource検査が成功した。外部class、fixture、依存JAR、生成cache、開発資料を拒否する。依存JARとcache混入の追加回帰は修正前に失敗し、修正後に全8 buildSrcテストが成功した。
+- サーバー検証scriptの10テストが成功した。現在版JARの選択、欠落・危険な版文字列・symlink、runtime所有範囲・未所有ディレクトリ、hash不一致、migration CLIを検査した。
+- `.local/verification/template-migration-server`で配布KFFを使い、本番JARのみの`CLEAN_PRODUCTION_JAR_BOOT_PASS`を確認した。KFFは作者配布`kotlinforforge-5.5.0-all.jar`で、Maven aggregateではない。
+- Kotlin版の保存・停止・別JVM読み込みは`CMZ_PERSIST_SEED_PASS`、`CMZ_PERSIST_CHECK_PASS items=5 chemicals=2`、`TWO_JVM_WORLD_PERSISTENCE_PASS`を確認した。
+- 別の`.local/verification/template-migration-legacy-server`を旧Java 0.2.3-devと旧fixtureでseedした。Kotlin 0.3.0-dev＋配布KFFへ交換し、新版fixtureではseedせずcheckだけを実行した。`LEGACY_WORLD_MIGRATION_PASS Java=0.2.3-dev Kotlin=0.3.0-dev`と5アイテム／2化学物質の実数量一致を確認した。その保存worldをfixture無しでも起動できた。全サーバーJVMは終了code 0で停止した。
+
+通常runtimeのmodsは本番addon、Create、Mekanism、KFFの4 JARのみ。fixtureは検証後に除去された。サーバーはloopback `127.0.0.1:25566`、world名`cmz-template-migration`。EULAは以前に受諾済みの親pack内検証ファイルを読み取り、今回のruntimeへコピーした。ユーザーワールドや旧検証worldは使用していない。
+
+ローカルログは`.local/logs/{baseline-build,baseline-gametest,core-check,adapter-check,kotlin-datagen,kotlin-gametest,clean-boot,persistence,migration}.log`。この時点の通常JAR SHA512: `1446073655907570ce7fffe52f64563d74098d04e5f6e47a2f296323f2289596c056ededf28cb34f7fd0d4510753c4381a9b8fe2405c6e549370aa4f0b148e2d`。最終成果物とCI相当の結果は後続の節で記録する。
+
+### 現行の再現手順
+
+Java 21へ`JAVA_HOME`を指定し、`GRADLE_USER_HOME`は必要ならrepo内へ置く。`CMZ_EULA_FILE`には既存の受諾済みファイルを指定する。
+
+```sh
+./gradlew :neoforge:runData
+./gradlew check :neoforge:build :neoforge:verifyModJar :neoforge:gameTestJar
+./gradlew :neoforge:runGameTestServer
+python3 -m unittest discover -s scripts/test -p 'test_*.py'
+python3 scripts/verify-server.py clean-boot
+python3 scripts/verify-server.py persistence
+python3 scripts/verify-server.py migration
+```
+
+migrationには`.local/template-migration/baseline`のJava 0.2.3-dev本番／fixture JARが必要。`CMZ_BASELINE_DIR`で別の読取り場所を指定できる。旧sourceは`git archive 243ec7f`から別ディレクトリへ展開し、旧Wrapperで`:neoforge:build :neoforge:gameTestJar`を実行して取得する。現在のKotlin版や同名のfixtureで旧版seedを代用しない。
+
+GitHub CIの実行、Windows上の実行、Kotlin版GUI／実操作のユーザー再検収はまだ実施していない。以下の旧版検証・検収は履歴として維持する。
+
+---
 
 ## Pinned runtime for accepted processing build (`0.2.0-dev`)
 

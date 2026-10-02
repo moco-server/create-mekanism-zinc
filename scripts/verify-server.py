@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -13,8 +14,9 @@ import urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-RUNTIME = ROOT / ".local" / "verification" / "full-processing-server"
-WORLD_NAME = "cmz-full-processing"
+RUNTIME_NAME = "template-migration-legacy-server" if len(sys.argv) > 1 and sys.argv[1] == "migration" else "template-migration-server"
+RUNTIME = ROOT / ".local" / "verification" / RUNTIME_NAME
+WORLD_NAME = "cmz-template-migration"
 SERVER_PORT = 25566
 INSTALLER_URL = "https://maven.neoforged.net/releases/net/neoforged/neoforge/21.1.252/neoforge-21.1.252-installer.jar"
 INSTALLER_SHA512 = "11addafebd1dbb583252230c7ff97bf80c8b5f6d980a6ae8ffd409ba302e8beaee87e51c35fd8daf8a589b1c9fce9845dd0406a7b7113185ad349748a3461de5"
@@ -26,6 +28,80 @@ DEPENDENCIES = {
     "create-UjX6dr61.jar": ("maven.modrinth/create/UjX6dr61", "11cc8fc049d2f67f6548c7abfada6b82a3adb5c7ca410a742de04bbca76e03862c518721b88d806f6e6d768a4d68531fdb903a85859b25d1484d550cc7bafd4b"),
     "mekanism-5KzzycBT.jar": ("maven.modrinth/mekanism/5KzzycBT", "66745825330a98f3e4a5ea3a44aff8b00870f715c144edc38dd2f61b4240589600b58ae89efac3b54dbb5aa430b1059dac1a28fd71cac5cc9002bbeb5ba3f22b"),
 }
+
+
+# 配布KFF。Maven aggregateではなく、language providerを含む作者配布物を使う。
+KFF_URL = "https://cdn.modrinth.com/data/ordsPcFz/versions/tdvjylfz/kotlinforforge-5.5.0-all.jar"
+KFF_SHA512 = "4544a80300cac93ce92b44b2b73a386e6e568d7dfc0744dfb98b1f6c6cc3479cece8630155a2887e49b4120ebdb90441ec15a2e053f2d2d31fd58d28d1abb7b4"
+OWNERSHIP_TEXT = "Private disposable Create Mekanism Zinc verification runtime.\n"
+
+
+def mod_version(root: Path) -> str:
+    values = [line.partition("=")[2].strip() for line in (root / "gradle.properties").read_text(encoding="utf-8").splitlines()
+              if line.partition("=")[0].strip() == "mod_version"]
+    if len(values) != 1:
+        raise ValueError("Exactly one mod_version property is required")
+    validate_version(values[0])
+    return values[0]
+
+
+def validate_version(version: str) -> None:
+    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._+-]*", version):
+        raise ValueError(f"Invalid mod_version: {version!r}")
+
+
+def checked_artifact(path: Path) -> Path:
+    if path.is_symlink():
+        raise ValueError(f"Artifact must not be a symlink: {path}")
+    if not path.is_file():
+        raise FileNotFoundError(f"Build artifact first: {path}")
+    return path
+
+
+def mod_artifact(root: Path, version: str, fixture: bool) -> Path:
+    validate_version(version)
+    suffix = "-gametests" if fixture else ""
+    return checked_artifact(root / "neoforge/build/libs" / f"create-mekanism-zinc-{version}{suffix}.jar")
+
+
+def ensure_owned_runtime(root: Path, runtime: Path, game_dir: Path) -> None:
+    base = root.resolve() / ".local/verification"
+    if runtime.resolve().parent != base or game_dir.resolve() != runtime.resolve() / "instance":
+        raise ValueError("Runtime must be directly under .local/verification with a direct instance directory")
+    for path in (runtime, game_dir, runtime / "neoforge-install", runtime / "logs",
+                 runtime / ".cmz-owned-runtime", game_dir / "mods", game_dir / "libraries"):
+        if path.is_symlink():
+            raise ValueError(f"Owned runtime path must not be a symlink: {path}")
+    runtime.mkdir(parents=True, exist_ok=True)
+    marker = runtime / ".cmz-owned-runtime"
+    if marker.exists():
+        if not marker.is_file() or marker.read_text(encoding="utf-8") != OWNERSHIP_TEXT:
+            raise ValueError(f"Unrecognized runtime ownership marker: {marker}")
+    else:
+        if any(runtime.iterdir()):
+            raise ValueError(f"Refusing existing unmarked runtime directory: {runtime}")
+        marker.write_text(OWNERSHIP_TEXT, encoding="utf-8")
+
+
+def verify_hash(path: Path, expected: str) -> None:
+    actual = sha512(path)
+    if actual != expected:
+        raise ValueError(f"SHA-512 mismatch for {path.name}: {actual}")
+
+
+def download_verified(url: str, expected: str, destination: Path) -> None:
+    if destination.is_file() and sha512(destination) == expected:
+        return
+    temporary = destination.with_suffix(destination.suffix + ".part")
+    if destination.is_symlink() or temporary.is_symlink():
+        raise ValueError(f"Download target must not be a symlink: {destination}")
+    try:
+        with urllib.request.urlopen(url, timeout=60) as response, temporary.open("wb") as output:
+            shutil.copyfileobj(response, output)
+        verify_hash(temporary, expected)
+        temporary.replace(destination)
+    finally:
+        temporary.unlink(missing_ok=True)
 
 
 def sha512(path: Path) -> str:
@@ -44,29 +120,17 @@ def cached_dependency(rel: str, expected: str) -> Path:
     raise RuntimeError(f"Pinned Gradle cache artifact missing or hash mismatch: {rel}; checked {len(matches)} candidates")
 
 
-def prepare() -> None:
+def prepare(production: Path | None = None, with_kff: bool = True) -> None:
     version = subprocess.run([str(JAVA), "-version"], check=True, capture_output=True, text=True)
     if 'version "21' not in version.stderr:
         raise RuntimeError(f"Java 21 is required for server verification; selected executable: {JAVA}")
-    resolved_game_dir = GAME_DIR.resolve()
-    resolved_runtime = RUNTIME.resolve()
-    if not resolved_game_dir.is_relative_to(resolved_runtime) or resolved_game_dir.parent != resolved_runtime or resolved_game_dir.name != "instance":
-        raise RuntimeError(f"CMZ_GAME_DIR must be the disposable instance directory {RUNTIME / 'instance'}")
-    RUNTIME.mkdir(parents=True, exist_ok=True)
-    ownership = RUNTIME / ".cmz-owned-runtime"
-    if not ownership.exists():
-        if any(RUNTIME.iterdir()):
-            raise RuntimeError(f"Refusing existing unmarked runtime directory: {RUNTIME}")
-        ownership.write_text("Private disposable Create Mekanism Zinc verification runtime.\n", encoding="utf-8")
+    ensure_owned_runtime(ROOT, RUNTIME, GAME_DIR)
+    addon = checked_artifact(production) if production is not None else mod_artifact(ROOT, mod_version(ROOT), False)
     install = RUNTIME / "neoforge-install"
     install.mkdir(exist_ok=True)
     installer = RUNTIME / "neoforge-21.1.252-installer.jar"
-    if not installer.exists() or sha512(installer) != INSTALLER_SHA512:
-        with urllib.request.urlopen(INSTALLER_URL, timeout=60) as response, installer.open("wb") as output:
-            shutil.copyfileobj(response, output)
+    download_verified(INSTALLER_URL, INSTALLER_SHA512, installer)
     actual = sha512(installer)
-    if actual != INSTALLER_SHA512:
-        raise RuntimeError(f"NeoForge installer SHA-512 mismatch: {actual}")
     if not (install / "run.sh").exists():
         with (install / "installer.log").open("w", encoding="utf-8") as log:
             subprocess.run([str(JAVA), "-jar", str(installer), "--installServer"], cwd=install,
@@ -95,9 +159,13 @@ def prepare() -> None:
         shutil.copy2(source, target)
         if sha512(target) != expected:
             raise RuntimeError(f"Copy hash mismatch for {filename}")
-    addon = ROOT / "neoforge/build/libs/create-mekanism-zinc-0.2.0-dev.jar"
-    if not addon.is_file():
-        raise RuntimeError(f"Build production jar first: {addon}")
+    for old in mods.glob("kotlinforforge-*.jar"):
+        old.unlink()
+    if with_kff:
+        kff = RUNTIME / "kotlinforforge-5.5.0-all.jar"
+        download_verified(KFF_URL, KFF_SHA512, kff)
+        shutil.copy2(kff, mods / kff.name)
+        verify_hash(mods / kff.name, KFF_SHA512)
     for old in mods.glob("create-mekanism-zinc-*.jar"):
         old.unlink()
     shutil.copy2(addon, mods / addon.name)
@@ -105,18 +173,17 @@ def prepare() -> None:
 
 
 class Server:
-    def __init__(self, include_fixture: bool):
+    def __init__(self, include_fixture: bool, fixture: Path | None = None):
         self.logs: list[str] = []
         self.lock = threading.Lock()
         self.process: subprocess.Popen[str] | None = None
         self.include_fixture = include_fixture
+        self.fixture = fixture
 
     def start(self) -> None:
         mods = GAME_DIR / "mods"
         if self.include_fixture:
-            fixture = ROOT / "neoforge/build/libs/create-mekanism-zinc-0.2.0-dev-gametests.jar"
-            if not fixture.is_file():
-                raise RuntimeError(f"Build test fixture jar first: {fixture}")
+            fixture = checked_artifact(self.fixture) if self.fixture is not None else mod_artifact(ROOT, mod_version(ROOT), True)
             shutil.copy2(fixture, mods / fixture.name)
         else:
             for fixture in mods.glob("*gametests.jar"):
@@ -231,7 +298,32 @@ def persistence() -> None:
         second.stop()
 
 
+def migration() -> None:
+    baseline = Path(os.environ.get("CMZ_BASELINE_DIR", ROOT / ".local/template-migration/baseline"))
+    legacy = checked_artifact(baseline / "create-mekanism-zinc-0.2.3-dev.jar")
+    fixture = checked_artifact(baseline / "create-mekanism-zinc-0.2.3-dev-gametests.jar")
+    # 旧版でseedしたworldを、新版fixtureだけでcheckする。新版seedで上書きしない。
+    prepare(legacy, with_kff=False)
+    first = Server(True, fixture)
+    try:
+        first.start()
+        first.command("cmz_verify seed", "CMZ_PERSIST_SEED_PASS")
+        first.command("save-all flush", "Saved the game")
+    finally:
+        first.stop()
+    prepare()
+    second = Server(True)
+    try:
+        second.start()
+        second.command("cmz_verify check", "CMZ_PERSIST_CHECK_PASS")
+        print("LEGACY_WORLD_MIGRATION_PASS Java=0.2.3-dev Kotlin=" + mod_version(ROOT), flush=True)
+    finally:
+        second.stop()
+    # 保存後の通常JARはfixtureが無くても起動できる。
+    clean_boot()
+
+
 if __name__ == "__main__":
-    if len(sys.argv) != 2 or sys.argv[1] not in {"prepare", "clean-boot", "persistence"}:
-        raise SystemExit("Usage: python3 scripts/verify-server.py prepare|clean-boot|persistence")
-    {"prepare": prepare, "clean-boot": clean_boot, "persistence": persistence}[sys.argv[1]]()
+    if len(sys.argv) != 2 or sys.argv[1] not in {"prepare", "clean-boot", "persistence", "migration"}:
+        raise SystemExit("Usage: python3 scripts/verify-server.py prepare|clean-boot|persistence|migration")
+    {"prepare": prepare, "clean-boot": clean_boot, "persistence": persistence, "migration": migration}[sys.argv[1]]()

@@ -1,5 +1,17 @@
 # 検証記録
 
+## CI依存検証の登録漏れ修正（2026-10-02）
+
+GitHub Actions run `36992278786`ではLinux／Windowsとも、`buildSrc`設定時に`kotlinx-coroutines-bom:1.6.4`のPOMが検証メタデータ未登録で停止した。Java 21（Eclipse Adoptium）、Gradle Wrapper 8.12.1、`JAVA_TOOL_OPTIONS=-XX:ActiveProcessorCount=2`と、新規`GRADLE_USER_HOME=.local/gradle-ci-clean`で`./gradlew help`を実行し、同じ失敗を再現した。既存キャッシュの`check`は修正前にも成功したため、既存キャッシュだけではこの登録漏れを検出できなかった。
+
+- [Maven Centralのcoroutines BOM 1.6.4 POM](https://repo.maven.apache.org/maven2/org/jetbrains/kotlinx/kotlinx-coroutines-bom/1.6.4/kotlinx-coroutines-bom-1.6.4.pom)と[Gradle Plugin Portalの同POM](https://plugins.gradle.org/m2/org/jetbrains/kotlinx/kotlinx-coroutines-bom/1.6.4/kotlinx-coroutines-bom-1.6.4.pom)を取得し、SHA-512一致を確認して登録した。
+- 続く新規キャッシュの`check`で、JUnit BOM [5.7.1](https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.7.1/junit-bom-5.7.1.module)／[5.9.0](https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.9.0/junit-bom-5.9.0.module)のGradle module metadataにも登録漏れを確認した。Maven Centralから取得したSHA-512を登録した。3ファイルともハッシュは`gradle/verification-metadata.xml`に記録した。依存版と検証設定は変更していない。
+- 修正後、同じ新規キャッシュで`./gradlew check :neoforge:build :neoforge:verifyModJar`が終了code 0。既存タスク出力は一部UP-TO-DATEだが、依存取得と検証は新規キャッシュで行った。
+- 別呼出しの`./gradlew :neoforge:runData`が終了code 0。`git status --porcelain --untracked-files=all -- neoforge/src/generated/resources`の差分0。
+- 続く`./gradlew :neoforge:build :neoforge:verifyModJar :neoforge:runGameTestServer`が終了code 0、`All 33 required tests passed`。`node scripts/check-gametest-result.mjs`も33件成功を確認した。
+
+ログと取得ファイルは`.local/verification/ci-dependencies/`へ保存した。今回Windows実機、GitHub Actions再実行、GUI、新たな通常JAR専用サーバー起動は未実施。
+
 ## Kotlinテンプレート移行（0.3.0-dev、2026-10-02）
 
 Minecraft 1.21.1／NeoForge 21.1.252／Create 6.0.10／Mekanism 10.7.19.85は維持した。Gradle 8.12.1、Kotlin 2.0.21、KFF 5.5.0を採用した。Java 21の検証済みJDKを読み取りで利用し、Gradleキャッシュは今回のworktreeの`.local/gradle`へ複製した。ローカル検証では`JAVA_TOOL_OPTIONS=-XX:ActiveProcessorCount=2`、通常サーバーでは追加で`-Xmx2G`を指定した。

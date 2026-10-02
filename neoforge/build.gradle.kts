@@ -205,3 +205,5 @@ val verifyModJar =
         )
     }
 tasks.named("build") { dependsOn(verifyModJar) }
+
+tasks.named("check") { dependsOn("detektGametest") }

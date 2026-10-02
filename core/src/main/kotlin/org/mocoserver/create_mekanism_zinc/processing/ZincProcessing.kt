@@ -1,0 +1,358 @@
+// 既存のpackage名を維持し、移行以外の識別子変更を避ける。
+@file:Suppress("ktlint:standard:package-name", "PackageNaming")
+
+package org.mocoserver.create_mekanism_zinc.processing
+
+import java.util.Collections
+
+/** ゲームAPIから独立した亜鉛加工係数。量は各レシピの入力／出力単位。 */
+public object ZincProcessing {
+    // 独立した係数表として値を直接記録する。単体テストが全21件を照合する。
+    @Suppress("MagicNumber")
+    private val RECIPES: List<ProcessingRecipe> =
+        Collections.unmodifiableList(
+            listOf(
+                ProcessingRecipe(
+                    "dust/from_ore",
+                    Kind.ENRICHING,
+                    "c:ores/zinc",
+                    true,
+                    1,
+                    "create_mekanism_zinc:dust_zinc",
+                    2,
+                    0,
+                    0f,
+                ),
+                ProcessingRecipe(
+                    "dust/from_raw_ore",
+                    Kind.ENRICHING,
+                    "c:raw_materials/zinc",
+                    true,
+                    3,
+                    "create_mekanism_zinc:dust_zinc",
+                    4,
+                    0,
+                    0f,
+                ),
+                ProcessingRecipe(
+                    "dust/from_raw_block",
+                    Kind.ENRICHING,
+                    "c:storage_blocks/raw_zinc",
+                    true,
+                    1,
+                    "create_mekanism_zinc:dust_zinc",
+                    12,
+                    0,
+                    0f,
+                ),
+                ProcessingRecipe(
+                    "dust/from_ingot",
+                    Kind.CRUSHING,
+                    "c:ingots/zinc",
+                    true,
+                    1,
+                    "create_mekanism_zinc:dust_zinc",
+                    1,
+                    0,
+                    0f,
+                ),
+                ProcessingRecipe(
+                    "ingot/from_dust_smelting",
+                    Kind.SMELTING,
+                    "create_mekanism_zinc:dust_zinc",
+                    false,
+                    1,
+                    "create:zinc_ingot",
+                    1,
+                    200,
+                    0.35f,
+                ),
+                ProcessingRecipe(
+                    "ingot/from_dust_blasting",
+                    Kind.BLASTING,
+                    "create_mekanism_zinc:dust_zinc",
+                    false,
+                    1,
+                    "create:zinc_ingot",
+                    1,
+                    100,
+                    0.35f,
+                ),
+                ProcessingRecipe(
+                    "clump/from_ore",
+                    Kind.PURIFYING,
+                    "c:ores/zinc",
+                    true,
+                    1,
+                    "create_mekanism_zinc:clump_zinc",
+                    3,
+                    0,
+                    0f,
+                    ChemicalInput("mekanism:oxygen", 1),
+                    null,
+                    true,
+                ),
+                ProcessingRecipe(
+                    "clump/from_raw_ore",
+                    Kind.PURIFYING,
+                    "c:raw_materials/zinc",
+                    true,
+                    1,
+                    "create_mekanism_zinc:clump_zinc",
+                    2,
+                    0,
+                    0f,
+                    ChemicalInput("mekanism:oxygen", 1),
+                    null,
+                    true,
+                ),
+                ProcessingRecipe(
+                    "clump/from_raw_block",
+                    Kind.PURIFYING,
+                    "c:storage_blocks/raw_zinc",
+                    true,
+                    1,
+                    "create_mekanism_zinc:clump_zinc",
+                    18,
+                    0,
+                    0f,
+                    ChemicalInput("mekanism:oxygen", 2),
+                    null,
+                    true,
+                ),
+                ProcessingRecipe(
+                    "clump/from_shard",
+                    Kind.PURIFYING,
+                    "c:shards/zinc",
+                    true,
+                    1,
+                    "create_mekanism_zinc:clump_zinc",
+                    1,
+                    0,
+                    0f,
+                    ChemicalInput("mekanism:oxygen", 1),
+                    null,
+                    true,
+                ),
+                ProcessingRecipe(
+                    "dirty_dust/from_clump",
+                    Kind.CRUSHING,
+                    "c:clumps/zinc",
+                    true,
+                    1,
+                    "create_mekanism_zinc:dirty_dust_zinc",
+                    1,
+                    0,
+                    0f,
+                ),
+                ProcessingRecipe(
+                    "dust/from_dirty_dust",
+                    Kind.ENRICHING,
+                    "c:dirty_dusts/zinc",
+                    true,
+                    1,
+                    "create_mekanism_zinc:dust_zinc",
+                    1,
+                    0,
+                    0f,
+                ),
+                ProcessingRecipe(
+                    "shard/from_ore",
+                    Kind.INJECTING,
+                    "c:ores/zinc",
+                    true,
+                    1,
+                    "create_mekanism_zinc:shard_zinc",
+                    4,
+                    0,
+                    0f,
+                    ChemicalInput("mekanism:hydrogen_chloride", 1),
+                    null,
+                    true,
+                ),
+                ProcessingRecipe(
+                    "shard/from_raw_ore",
+                    Kind.INJECTING,
+                    "c:raw_materials/zinc",
+                    true,
+                    3,
+                    "create_mekanism_zinc:shard_zinc",
+                    8,
+                    0,
+                    0f,
+                    ChemicalInput("mekanism:hydrogen_chloride", 1),
+                    null,
+                    true,
+                ),
+                ProcessingRecipe(
+                    "shard/from_raw_block",
+                    Kind.INJECTING,
+                    "c:storage_blocks/raw_zinc",
+                    true,
+                    1,
+                    "create_mekanism_zinc:shard_zinc",
+                    24,
+                    0,
+                    0f,
+                    ChemicalInput("mekanism:hydrogen_chloride", 2),
+                    null,
+                    true,
+                ),
+                ProcessingRecipe(
+                    "shard/from_crystal",
+                    Kind.INJECTING,
+                    "c:crystals/zinc",
+                    true,
+                    1,
+                    "create_mekanism_zinc:shard_zinc",
+                    1,
+                    0,
+                    0f,
+                    ChemicalInput("mekanism:hydrogen_chloride", 1),
+                    null,
+                    true,
+                ),
+                ProcessingRecipe(
+                    "slurry/dirty/from_ore",
+                    Kind.DISSOLUTION,
+                    "c:ores/zinc",
+                    true,
+                    1,
+                    "create_mekanism_zinc:dirty_zinc",
+                    1000,
+                    0,
+                    0f,
+                    ChemicalInput("mekanism:sulfuric_acid", 1),
+                    null,
+                    true,
+                ),
+                ProcessingRecipe(
+                    "slurry/dirty/from_raw_ore",
+                    Kind.DISSOLUTION,
+                    "c:raw_materials/zinc",
+                    true,
+                    3,
+                    "create_mekanism_zinc:dirty_zinc",
+                    2000,
+                    0,
+                    0f,
+                    ChemicalInput("mekanism:sulfuric_acid", 1),
+                    null,
+                    true,
+                ),
+                ProcessingRecipe(
+                    "slurry/dirty/from_raw_block",
+                    Kind.DISSOLUTION,
+                    "c:storage_blocks/raw_zinc",
+                    true,
+                    1,
+                    "create_mekanism_zinc:dirty_zinc",
+                    6000,
+                    0,
+                    0f,
+                    ChemicalInput("mekanism:sulfuric_acid", 2),
+                    null,
+                    true,
+                ),
+                ProcessingRecipe(
+                    "slurry/clean",
+                    Kind.WASHING,
+                    "create_mekanism_zinc:dirty_zinc",
+                    false,
+                    1,
+                    "create_mekanism_zinc:clean_zinc",
+                    1,
+                    0,
+                    0f,
+                    null,
+                    FluidInput("minecraft:water", 5),
+                    false,
+                ),
+                ProcessingRecipe(
+                    "crystal/from_slurry",
+                    Kind.CRYSTALLIZING,
+                    "create_mekanism_zinc:clean_zinc",
+                    false,
+                    200,
+                    "create_mekanism_zinc:crystal_zinc",
+                    1,
+                    0,
+                    0f,
+                ),
+            ),
+        )
+
+    @JvmStatic
+    public fun recipes(): List<ProcessingRecipe> = RECIPES
+
+    public enum class Kind {
+        ENRICHING,
+        CRUSHING,
+        SMELTING,
+        BLASTING,
+        PURIFYING,
+        INJECTING,
+        DISSOLUTION,
+        WASHING,
+        CRYSTALLIZING,
+    }
+
+    public data class ChemicalInput(
+        public val id: String,
+        public val amount: Long,
+    ) {
+        public fun id(): String = id
+
+        public fun amount(): Long = amount
+    }
+
+    public data class FluidInput(
+        public val tag: String,
+        public val amount: Int,
+    ) {
+        public fun tag(): String = tag
+
+        public fun amount(): Int = amount
+    }
+
+    // Javaアダプタの移植中だけrecord accessorを保持する。Task 3で削除する。
+    @Suppress("TooManyFunctions")
+    public data class ProcessingRecipe(
+        public val path: String,
+        public val kind: Kind,
+        public val inputId: String,
+        public val inputTag: Boolean,
+        public val inputCount: Int,
+        public val outputId: String,
+        public val outputCount: Int,
+        public val cookingTicks: Int,
+        public val experience: Float,
+        public val chemicalInput: ChemicalInput? = null,
+        public val fluidInput: FluidInput? = null,
+        public val perTickUsage: Boolean = false,
+    ) {
+        public fun path(): String = path
+
+        public fun kind(): Kind = kind
+
+        public fun inputId(): String = inputId
+
+        public fun inputTag(): Boolean = inputTag
+
+        public fun inputCount(): Int = inputCount
+
+        public fun outputId(): String = outputId
+
+        public fun outputCount(): Int = outputCount
+
+        public fun cookingTicks(): Int = cookingTicks
+
+        public fun experience(): Float = experience
+
+        public fun chemicalInput(): ChemicalInput? = chemicalInput
+
+        public fun fluidInput(): FluidInput? = fluidInput
+
+        public fun perTickUsage(): Boolean = perTickUsage
+    }
+}

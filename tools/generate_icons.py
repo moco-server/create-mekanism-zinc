@@ -11,7 +11,7 @@ import zlib
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 CROP_SPEC = PROJECT_ROOT / "artwork/zinc-v2-crops.json"
-DEFAULT_OUTPUT = PROJECT_ROOT / "common/src/main/resources/assets/create_mekanism_zinc/textures/item"
+DEFAULT_OUTPUT = PROJECT_ROOT / "core/src/main/resources/assets/create_mekanism_zinc/textures/item"
 ICON_IDS = ("dust_zinc", "dirty_dust_zinc", "clump_zinc", "shard_zinc", "crystal_zinc")
 PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
 

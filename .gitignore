@@ -11,3 +11,4 @@ repo/
 __pycache__/
 *.py[cod]
 .superpowers/
+.worktrees/

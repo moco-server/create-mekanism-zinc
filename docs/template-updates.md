@@ -22,3 +22,15 @@
 - artifact収集先のsymlinkを拒否し、JARのtimestampと順序を固定した。通常の空directoryへの収集と配布内容は維持する。
 
 最終レビューでWindows native 24 JARのSHA512不足を修正した。Windows OS属性で実runtime configurationを解決して失敗→成功を確認し、Linux checksも再実行した。Windows固有依存のchecksum保守が追加されるが、strict検証は維持する。
+
+## 最終レビューの判定と対象範囲
+
+独立レビューは修正後の構成をマージ可能と判定した。Criticalなし、Windows checksum不足のImportant 1件は解消、未解決Minorなし。
+
+次の保留判断を確認し、今回の検証範囲として採用する。
+
+- Kotlin版GUI・操作・JEI画面は未実施。別profileでの試遊が必要で、Java版の検収を新版の実測として扱わない。
+- Windows OS／GitHub Actionsの全工程は未実施。Windows属性の依存解決成功だけではOS上の成功を保証しない。
+- 外部利用者向けJava binary API互換は仕様の保証対象外。registry／生成resource／保存互換は実測している。
+- 固定版以外、Fabric、親packとの共存は対象外。対応を広げる場合は別途検証が必要。
+- 検証専用runtime／cacheを作成後に手動改変する場合の包括的な耐改ざん性は対象外。所有範囲・symlink・hashの検査は通常の生成／再利用経路を保護する。

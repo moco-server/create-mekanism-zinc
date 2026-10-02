@@ -20,3 +20,5 @@
 - Java版生成JSONを独立期待値にした。将来の意図的なレシピ変更では期待値の再承認も必要になる。
 - 大きいGameTest helperを用途別に分けた。helperの可視性が変わるため、コンパイルと実GameTestで検証した。
 - artifact収集先のsymlinkを拒否し、JARのtimestampと順序を固定した。通常の空directoryへの収集と配布内容は維持する。
+
+最終レビューでWindows native 24 JARのSHA512不足を修正した。Windows OS属性で実runtime configurationを解決して失敗→成功を確認し、Linux checksも再実行した。Windows固有依存のchecksum保守が追加されるが、strict検証は維持する。

@@ -22,9 +22,17 @@ Minecraft 1.21.1／NeoForge 21.1.252／Create 6.0.10／Mekanism 10.7.19.85は維
 
 テンプレートのCI補助・ローカルskills・issue／PR templateを採用し、Linux／Windows workflowを設定した。Linux相当のコマンドをローカルで実行し、Nodeテスト21件、Pythonテスト10件、root check、通常JAR build／verify、fixture JAR buildが成功した。再実行したdatagenと画像生成でも全46 baseline hash一致、追跡・未追跡差分0。最終ソースで実行したGameTestも33 required成功。
 
-JEI 19.51.0.418はModDevGradle 2.0.148の`RunModel.getAdditionalRuntimeClasspathConfiguration()`へclientだけ追加した。固定plugin JARの署名を`javap`で確認し、生成したclient classpathにJEIが存在、server／data／GameTest classpathに不存在を確認した。API参照: [対象版RunModel](https://github.com/neoforged/ModDevGradle/blob/2.0.148/src/main/java/net/neoforged/moddevgradle/dsl/RunModel.java)。GUIは起動していない。
+JEI 19.51.0.418はModDevGradle 2.0.148の`RunModel.getAdditionalRuntimeClasspathConfiguration()`へclientだけ追加した。作者公開の固定版sources JARとplugin JARの署名を`javap`で確認し、生成したclient classpathにJEIが存在、server／data／GameTest classpathに不存在を確認した。API参照: [作者公開の2.0.148 sources JAR内RunModel.java](https://maven.neoforged.net/releases/net/neoforged/moddev-gradle/2.0.148/moddev-gradle-2.0.148-sources.jar)。GUIは起動していない。
 
 JARはtimestampを除去しentry順序を固定した。最終通常JAR SHA512: `a1e94fd8dcccbd892643a0ac4305c7509b38d6ff2f8bd99d017466f06e1fb9ee0c7ec259af743665f72b16af2fb1540d831bd79a9d53e6d7df03d9ad39b59354`。通常JAR収集scriptはclassifierを除外し、0／複数候補、symlink、空でない出力先を拒否する。Linux／Windows CIはGitHub上では未実行。公開配布、親packと既存試遊profileへの導入は未実施。
+
+### 最終レビューとWindows依存検証
+
+CodeRabbit CLI 0.8.2は作者配布ZIPと公開SHA256SUMSを照合し、インストール済みbinaryの一致を確認した。全実装commitのレビューは指摘0件。独立レビューでWindows向けLWJGL nativeのchecksum不足を指摘されたため修正した。
+
+Linux上で固定ModDevGradleの`net.neoforged.minecraftdependencies.OperatingSystem.ATTRIBUTE`を`windows`へ設定し、実際の`neoFormRuntimeDependenciesRuntimeClasspath`と`testRuntimeClasspath`を解決した。修正前はstrict検証でWindows native 24 JARの未記録が原因で失敗した。作者repoの対象版artifactを取得してSHA512を追加後、同じconfigurationを通常のstrict検証で解決できた。Linuxのroot check／build／verify／fixtureも再成功し、通常JARの最終hashは変わらない。
+
+この確認はWindows向け依存解決の検証であり、Windows OS上のビルド実行ではない。ローカルログは`.local/logs/windows-runtime-{red,metadata,green}.log`と`review-fix-check.log`。対象はLWJGL 3.3.3の8 modules（lwjgl／freetype／glfw／jemalloc／openal／opengl／stb／tinyfd）、各windows／windows-x86／windows-arm64。検証時の一時init scriptは`.local/windows-runtime.init.gradle`に保持する。
 
 ### 現行の再現手順
 

@@ -31,7 +31,9 @@ jobs:
           package-manager-cache: false
       - uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
       - name: Script tests
-        run: node --test scripts/test/*.test.mjs
+        run: |
+          node scripts/release-version.mjs check
+          node --test scripts/test/*.test.mjs
       - name: Isolated server script tests
         run: python3 -m unittest discover -s scripts/test -p 'test_*.py'
       - name: Quality checks

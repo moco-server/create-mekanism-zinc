@@ -1,5 +1,6 @@
 plugins {
     `java-library`
+    `maven-publish`
     alias(libs.plugins.kotlin)
     alias(libs.plugins.moddev)
 }
@@ -13,7 +14,10 @@ repositories {
 val localRuntime = configurations.create("localRuntime")
 dependencies {
     implementation(project(":core"))
-    implementation(libs.kff)
+    implementation(libs.kff) {
+        // ローダーは対象のNeoForgeが供給し、KFFの版範囲から別バージョンを解決しない。
+        exclude(group = "net.neoforged.fancymodloader", module = "loader")
+    }
     compileOnly("maven.modrinth:create:${property("create_version")}")
     compileOnly("maven.modrinth:mekanism:${property("mekanism_version")}")
     add("localRuntime", "maven.modrinth:create:${property("create_version")}")
@@ -211,3 +215,27 @@ val verifyModJar =
 tasks.named("build") { dependsOn(verifyModJar) }
 
 tasks.named("check") { dependsOn("detektGametest") }
+
+publishing {
+    publications {
+        create<MavenPublication>("mod") {
+            artifactId = base.archivesName.get()
+            artifact(tasks.jar)
+            pom {
+                name.set(providers.gradleProperty("mod_name"))
+                description.set(providers.gradleProperty("mod_description"))
+                url.set(providers.gradleProperty("mod_repo_url"))
+            }
+        }
+    }
+    val githubRepository = providers.environmentVariable("GITHUB_REPOSITORY")
+    if (githubRepository.isPresent) {
+        repositories {
+            maven {
+                name = "githubPackages"
+                url = uri("https://maven.pkg.github.com/${githubRepository.get().lowercase()}")
+                credentials(PasswordCredentials::class)
+            }
+        }
+    }
+}

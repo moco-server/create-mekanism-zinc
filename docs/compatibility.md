@@ -1,4 +1,4 @@
-# 現行の対応構成（0.3.0-dev）
+# 現行の対応構成（0.3.0）
 
 Minecraft 1.21.1、NeoForge 21.1.252、Java 21、Create 6.0.10（Modrinth `UjX6dr61`）、Mekanism 10.7.19.85（`5KzzycBT`）を維持する。MOD ID、登録ID、加工JSON、画像は旧Java版と同じ。
 

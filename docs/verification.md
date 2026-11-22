@@ -1,5 +1,12 @@
 # 検証記録
 
+## 初回配布 `v0.3.0`（2026-11-22）
+
+- リリースPR #3でGradleとChangesetsの版を`0.3.0`にそろえた。リリース候補のLinux／Windows CIが成功し、Linuxでデータ・画像の再生成差分が0、GameTest 33件が成功した。[リリースPR](https://github.com/moco-server/create-mekanism-zinc/pull/3)・[候補版の検証](https://github.com/moco-server/create-mekanism-zinc/actions/runs/45014086580)
+- マージコミット`b0babc2`で`check`、通常JARのビルドと内容検査、GameTest 33件が成功した。GitHub Packagesの`org.mocoserver.create_mekanism_zinc:create-mekanism-zinc:0.3.0`からJARとPOMを取得して公開前のファイルと照合し、同じJARをGitHub Releaseに添付した。[配布ワークフロー](https://github.com/moco-server/create-mekanism-zinc/actions/runs/45014370709)・[リリース](https://github.com/moco-server/create-mekanism-zinc/releases/tag/v0.3.0)
+- Releaseからダウンロードした`create-mekanism-zinc-0.3.0.jar`は候補版CIとローカルで検証した通常JARにバイト単位で一致した。NeoForge metadataの版は`0.3.0`、SHA-256は`112c4078bd7bdca97b058d27c1db17adac1f079eab4b3d4d2324f1cfff3c03e6`。
+- Temurin 21.0.13.1／Gradle 8.12.1で通常JARをビルドし、Create、Mekanism、配布KFFとともに新規ワールドの専用サーバーを起動した。`python3 scripts/verify-server.py clean-boot`で`CLEAN_PRODUCTION_JAR_BOOT_PASS`、`migration`で`LEGACY_WORLD_MIGRATION_PASS Java=0.2.3-dev Kotlin=0.3.0`を確認した。旧Java版で保存した5アイテムと2種類のスラリーのID・数量が一致し、全サーバーJVMが終了コード0で停止した。GUIクライアントの接続と画面表示は未実施。[対応構成](compatibility.md)
+
 ## Changesetsによる配布（2026-11-22）
 
 - Node 24.20.0／pnpm 12.8.1／Changesets CLI 3.0.3で固定lockfileから導入した。隔離した作業コピーで試験用patch changesetを消費し、`package.json`と`gradle.properties`が`0.3.0-dev`から`0.3.0`へそろい、当該版のRelease本文が生成された。Nodeテスト23件、Pythonテスト10件が成功した。

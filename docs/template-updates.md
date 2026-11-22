@@ -2,6 +2,8 @@
 
 ## 2026-10-02: 既存Java MODをKotlin構成へ移行
 
+当時の合意事項と受け入れ条件を参照できる。[Kotlinテンプレート移行仕様](kotlin-template-migration.md)
+
 - 基盤: [moco-server/minecraft-mod-template](https://github.com/moco-server/minecraft-mod-template)
 - template-version: `0.1.0`
 - 固定commit: `dfee13176ce3ec8e64d27dfdd12376a7cfd58b6b`

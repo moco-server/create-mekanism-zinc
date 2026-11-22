@@ -1,5 +1,7 @@
 # Minecraft MODテンプレートへの移行仕様
 
+2026-10-02に合意したJava版からKotlin版への移行仕様。現行の設計と固定版、移行時の実測結果は関連文書に記録している。[現在の設計](design.md)・[対応構成](compatibility.md)・[検証記録](verification.md)
+
 ## 目的と合意済みの方針
 
 既存のCreate Mekanism Zincを、moco-server/minecraft-mod-templateをベースとした独立Kotlin MODとして保守できる構成へ移行する。ユーザーは2026-10-02に、Kotlin化を含める方針を承認した。

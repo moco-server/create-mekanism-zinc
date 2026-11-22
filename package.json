@@ -1,6 +1,6 @@
 {
   "name": "create-mekanism-zinc",
-  "version": "0.3.0-dev",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@12.8.1",

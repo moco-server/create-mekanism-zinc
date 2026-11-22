@@ -1,0 +1,81 @@
+name: Release
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+    types: [closed]
+
+permissions: {}
+
+jobs:
+  release-pr:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+    concurrency:
+      group: changesets-${{ github.ref }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - name: Install Changesets
+        run: corepack pnpm --config.stateDir=.local/pnpm-state install --frozen-lockfile --ignore-scripts
+      - uses: changesets/action@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
+        with:
+          version-script: corepack pnpm run release:version
+          pr-title: Release Create Mekanism Zinc
+          commit-message: Release Create Mekanism Zinc
+
+  publish:
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.merged &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref == 'changeset-release/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    permissions:
+      contents: write
+      packages: write
+    concurrency:
+      group: publish-mod-release
+      queue: max
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: ${{ github.event.pull_request.merge_commit_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - name: Prepare release notes
+        id: release
+        run: |
+          version=$(node scripts/release-version.mjs prepare "$RUNNER_TEMP/mod-release-notes.md")
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
+      - name: Verify and collect the release JAR
+        run: |
+          ./gradlew check :neoforge:build :neoforge:verifyModJar :neoforge:generatePomFileForModPublication :neoforge:runGameTestServer
+          node scripts/check-gametest-result.mjs
+          node scripts/collect-mod-jar.mjs
+      - name: Publish to GitHub Packages and Releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_VERSION: ${{ steps.release.outputs.version }}
+        run: bash scripts/publish-release.sh "$RELEASE_VERSION" "$RUNNER_TEMP/mod-release-notes.md"

@@ -1,5 +1,6 @@
 {
-  "name": "create-mekanism-zinc-tools",
+  "name": "create-mekanism-zinc",
+  "version": "0.3.0-dev",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@12.8.1",
@@ -7,10 +8,12 @@
     "node": ">=24 <25"
   },
   "scripts": {
+    "release:version": "changeset version && node scripts/release-version.mjs sync",
     "test": "node --test scripts/test/*.test.mjs",
     "skills:install": "bash scripts/install-skills.sh"
   },
   "devDependencies": {
+    "@changesets/cli": "3.0.3",
     "skills": "1.7.0"
   }
 }

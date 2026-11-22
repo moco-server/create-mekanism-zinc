@@ -1,0 +1,9 @@
+{
+  "changelog": "@changesets/cli/changelog",
+  "commit": false,
+  "baseBranch": "main",
+  "privatePackages": {
+    "version": true,
+    "tag": false
+  }
+}

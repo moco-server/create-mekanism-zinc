@@ -1,5 +1,15 @@
 # 検証記録
 
+## Changesetsによる配布（2026-11-22）
+
+- Node 24.20.0／pnpm 12.8.1／Changesets CLI 3.0.3で固定lockfileから導入した。隔離した作業コピーで試験用patch changesetを消費し、`package.json`と`gradle.properties`が`0.3.0-dev`から`0.3.0`へそろい、当該版のRelease本文が生成された。Nodeテスト23件、Pythonテスト10件が成功した。
+- 変更前の`:neoforge:test`は、Kotlin for Forge 5.5.0の版範囲`[3,5)`から選ばれたloader 4.0.45の検証で失敗した。GameTest起動では同loaderとNeoForge 21.1.252付属の4.0.44が衝突した。KFFからのloader解決を除外し、NeoForgeの提供するloaderで動作を確認した。[KFF 5.5.0の依存情報](https://thedarkcolour.github.io/KotlinForForge/thedarkcolour/kfflang-neoforge/5.5.0/kfflang-neoforge-5.5.0.module)・[NeoForge 21.1.252の依存情報](https://maven.neoforged.net/releases/net/neoforged/neoforge/21.1.252/neoforge-21.1.252.module)
+- Temurin 21.0.13.1／Gradle 8.12.1で`runData`後の生成resource差分は0。厳格な依存検証で`check`、通常JARのビルドと内容検査、GameTest 33件、ローカルMaven登録が成功した。MavenのJARとRelease用に収集したJARは同一バイト列で、NeoForge metadataの版は`0.3.0`だった。JARのSHA-256は`112c4078bd7bdca97b058d27c1db17adac1f079eab4b3d4d2324f1cfff3c03e6`。
+- ローカルMaven登録と同じ通常JAR、Create、Mekanism、配布KFFで新規ワールドの専用サーバーを起動した。`CLEAN_PRODUCTION_JAR_BOOT_PASS`とサーバーJVMの終了コード0を確認した。
+- GitHub Packages向けGradleタスクはdry-runで確認した。公開スクリプトの模擬テストでは、Packages登録直後にRelease作成が失敗した場合の再実行、同一JAR/POMの再利用、内容が異なる既存JARの拒否を確認した。`actionlint` 1.7.12は`concurrency.queue`に未対応のため、このキーはGitHubの構文資料と照合し、残りを`actionlint`で検証した。[GitHub Actionsの同時実行制御](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency)
+
+ローカルログは`.local/release-verify/`。GitHub ActionsでのPR作成と実際の公開、Windows、GUI接続は未実施。
+
 ## CI依存検証の登録漏れ修正（2026-10-02）
 
 GitHub Actions run `36992278786`ではLinux／Windowsとも、`buildSrc`設定時に`kotlinx-coroutines-bom:1.6.4`のPOMが検証メタデータ未登録で停止した。Java 21（Eclipse Adoptium）、Gradle Wrapper 8.12.1、`JAVA_TOOL_OPTIONS=-XX:ActiveProcessorCount=2`と、新規`GRADLE_USER_HOME=.local/gradle-ci-clean`で`./gradlew help`を実行し、同じ失敗を再現した。既存キャッシュの`check`は修正前にも成功したため、既存キャッシュだけではこの登録漏れを検出できなかった。
